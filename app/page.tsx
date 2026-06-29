@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { TOOLS, CATEGORIES } from './lib/tools';
-import { SidebarNav } from './components/SidebarNav';
-import { Navbar } from './components/Navbar';
+import { SiteShell } from './components/SiteShell';
 
 const pdfCategories   = CATEGORIES.filter((c) => !c.id.startsWith('img-'));
 const imageCategories = CATEGORIES.filter((c) =>  c.id.startsWith('img-'));
@@ -11,12 +10,7 @@ export default function Home() {
   const totalTools = TOOLS.length;
 
   return (
-    <div className="min-h-screen" style={{ background: '#f4f6f8' }}>
-
-      {/* ══════════════════════════════════════════════════
-          HEADER
-      ══════════════════════════════════════════════════ */}
-      <Navbar totalTools={totalTools} />
+    <SiteShell>
 
       {/* ══════════════════════════════════════════════════
           HERO  (compact)
@@ -68,11 +62,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════
-          SIDEBAR DRAWER TRIGGER (fixed left edge, all screens)
-      ══════════════════════════════════════════════════ */}
-      <SidebarNav />
 
       {/* ══════════════════════════════════════════════════
           MAIN CONTENT
@@ -167,7 +156,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+    </SiteShell>
   );
 }
 

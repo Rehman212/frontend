@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { apiGet, apiDelete } from '../lib/api';
+import { SiteShell } from '../components/SiteShell';
 
 interface ConversionRecord {
   id: number;
@@ -41,7 +41,7 @@ function toolColor(slug: string): string {
 }
 
 export default function DashboardPage() {
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
   const [records, setRecords]     = useState<ConversionRecord[]>([]);
@@ -88,36 +88,7 @@ export default function DashboardPage() {
   const totalSize = records.reduce((s, r) => s + Number(r.fileSize), 0);
 
   return (
-    <div className="min-h-screen" style={{ background: '#f4f6f8' }}>
-      {/* Header */}
-      <header
-        className="sticky top-0 z-50 border-b"
-        style={{ background: '#fff', borderColor: '#e5e7eb', boxShadow: '0 1px 12px rgba(37,150,190,0.08)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-          <Link href="/">
-            <Image src="/logo.webp" alt="Digital Hub" width={130} height={40}
-              className="h-9 w-auto object-contain" priority />
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="hidden sm:flex items-center gap-1.5 text-sm font-semibold transition-all hover:opacity-70"
-              style={{ color: '#2596be' }}
-            >
-              ← All Tools
-            </Link>
-            <button
-              onClick={() => { logout(); router.push('/'); }}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:opacity-80"
-              style={{ background: '#f1f5f9', color: '#64748b' }}
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
-
+    <SiteShell>
       {/* Hero Banner */}
       <section
         className="relative overflow-hidden"
@@ -287,6 +258,6 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
-    </div>
+    </SiteShell>
   );
 }

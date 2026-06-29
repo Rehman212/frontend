@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { TOOLS } from '../../lib/tools';
 import { useAuth } from '../../context/AuthContext';
 import { apiPostBlob, saveConversion } from '../../lib/api';
+import { SiteShell } from '../../components/SiteShell';
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
@@ -348,52 +349,7 @@ export default function ToolClient({ slug }: { slug: string }) {
   })();
 
   return (
-    <div className="min-h-screen" style={{ background: '#f4f6f8' }}>
-
-      {/* ── Header ── */}
-      <header
-        className="sticky top-0 z-50 border-b"
-        style={{ background: '#ffffff', borderColor: '#e5e7eb', boxShadow: '0 1px 12px rgba(37,150,190,0.08)' }}
-      >
-        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/logo.webp"
-              alt="Digital Hub"
-              width={140}
-              height={40}
-              className="h-10 w-auto object-contain"
-              priority
-            />
-          </Link>
-          <div className="flex items-center gap-3">
-            {user ? (
-              <Link
-                href="/dashboard"
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-80"
-                style={{ background: '#eff6ff', color: '#2596be' }}
-              >
-                📂 My Files
-              </Link>
-            ) : (
-              <Link
-                href="/login"
-                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:bg-gray-100"
-                style={{ color: '#64748b', border: '1.5px solid #e5e7eb' }}
-              >
-                Login to save files
-              </Link>
-            )}
-            <Link
-              href="/"
-              className="flex items-center gap-1.5 text-sm font-semibold transition-all hover:opacity-70"
-              style={{ color: accentColor }}
-            >
-              <span>←</span> All Tools
-            </Link>
-          </div>
-        </div>
-      </header>
+    <SiteShell>
 
       <main className="max-w-3xl mx-auto px-4 py-10">
 
@@ -861,6 +817,6 @@ export default function ToolClient({ slug }: { slug: string }) {
           </Link>
         </div>
       </main>
-    </div>
+    </SiteShell>
   );
 }

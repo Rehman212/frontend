@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
+import { HeaderNav } from './HeaderNav';
 
 export function Navbar({ totalTools }: { totalTools: number }) {
   const { user, logout, loading: authLoading } = useAuth();
@@ -57,10 +58,11 @@ export function Navbar({ totalTools }: { totalTools: number }) {
           />
         </Link>
 
-        {/* Right side — always visible on all screen sizes */}
-        <div className="ml-auto flex items-center gap-2">
+        {/* Right side */}
+        <div className="ml-auto flex items-center gap-3 lg:gap-4 shrink-0">
+          <HeaderNav />
 
-          <span className="text-sm font-bold shrink-0" style={{ color: '#2596be' }}>
+          <span className="text-sm font-bold shrink-0 hidden sm:inline" style={{ color: '#2596be' }}>
             {totalTools}+ Free Tools
           </span>
 

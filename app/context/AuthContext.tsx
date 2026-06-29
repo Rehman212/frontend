@@ -55,11 +55,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async (emailOrUsername: string, password: string) => {
-      const res = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailOrUsername, password }),
-      });
+      let res: Response;
+      try {
+        res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailOrUsername, password }),
+        });
+      } catch {
+        throw new Error(
+          'Cannot reach API server. Start the backend: cd imgdigitalapi && npm run start:dev',
+        );
+      }
       if (!res.ok) {
         const d = await res.json().catch(() => ({})) as { message?: string };
         throw new Error(d.message || 'Login failed');
