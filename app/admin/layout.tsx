@@ -194,12 +194,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (isLoginPage) return;
     if (!loading && !user) {
       router.replace('/admin/login');
+      return;
     }
-  }, [loading, user, router, isLoginPage]);
+    if (!loading && user?.role !== 'admin') {
+      logout();
+      router.replace('/admin/login');
+    }
+  }, [loading, user, logout, router, isLoginPage]);
 
   if (isLoginPage) return <>{children}</>;
 
-  if (loading || !user) {
+  if (loading || !user || user.role !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: APEX.bg }}>
         <div className="w-9 h-9 rounded-full border-2 animate-spin" style={{ borderColor: APEX.brand, borderTopColor: 'transparent' }} />

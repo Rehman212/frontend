@@ -49,7 +49,7 @@ function FieldIcon({ children }: { children: React.ReactNode }) {
 }
 
 export default function AdminLoginPage() {
-  const { user, loading: authLoading, login } = useAuth();
+  const { user, loading: authLoading, adminLogin, logout } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
@@ -59,10 +59,13 @@ export default function AdminLoginPage() {
   const [showPw, setShowPw] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user) {
+    if (authLoading || !user) return;
+    if (user.role === 'admin') {
       router.replace('/admin');
+      return;
     }
-  }, [authLoading, user, router]);
+    logout();
+  }, [authLoading, user, logout, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,7 +76,7 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError('');
     try {
-      await login(email.trim(), password);
+      await adminLogin(email.trim(), password);
       router.push('/admin');
     } catch (err) {
       setError((err as Error).message);
@@ -82,7 +85,7 @@ export default function AdminLoginPage() {
     }
   };
 
-  if (authLoading || user) {
+  if (authLoading || user?.role === 'admin') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#f8fafc] gap-3">
         <div

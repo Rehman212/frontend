@@ -20,6 +20,7 @@ interface AuthCtx {
   token: string | null;
   loading: boolean;
   login: (emailOrUsername: string, password: string) => Promise<AuthUser>;
+  adminLogin: (email: string, password: string) => Promise<AuthUser>;
   signup: (email: string, username: string, password: string) => Promise<AuthUser>;
   logout: () => void;
 }
@@ -78,6 +79,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [persist],
   );
 
+  const adminLogin = useCallback(
+    async (email: string, password: string) => {
+      let res: Response;
+      try {
+        res = await fetch(`${API_BASE}/auth/admin-login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+      } catch {
+        throw new Error(
+          'Cannot reach API server. Start the backend: cd imgdigitalapi && npm run start:dev',
+        );
+      }
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({})) as { message?: string };
+        throw new Error(d.message || 'Admin login failed');
+      }
+      const data = await res.json() as { access_token: string; user: AuthUser };
+      persist(data.user, data.access_token);
+      return data.user;
+    },
+    [persist],
+  );
+
   const signup = useCallback(
     async (email: string, username: string, password: string) => {
       const res = await fetch(`${API_BASE}/auth/signup`, {
@@ -103,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, adminLogin, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
