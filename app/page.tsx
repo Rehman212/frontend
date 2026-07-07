@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { TOOLS, CATEGORIES } from './lib/tools';
 import { SiteShell } from './components/SiteShell';
+import { HeroSection } from './components/HeroSection';
 
 const pdfCategories   = CATEGORIES.filter((c) => !c.id.startsWith('img-'));
 const imageCategories = CATEGORIES.filter((c) =>  c.id.startsWith('img-'));
@@ -12,56 +13,7 @@ export default function Home() {
   return (
     <SiteShell>
 
-      {/* ══════════════════════════════════════════════════
-          HERO  (compact)
-      ══════════════════════════════════════════════════ */}
-      <section
-        className="relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #2596be 100%)',
-          paddingTop: '2rem',
-          paddingBottom: '2rem',
-        }}
-      >
-        <div
-          className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-10 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #2596be, transparent)', transform: 'translate(30%,-30%)' }}
-        />
-        <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center gap-8">
-          {/* Left: text */}
-          <div className="flex-1 text-center sm:text-left">
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-4"
-              style={{ background: 'rgba(37,150,190,0.18)', color: '#7dd3fc', border: '1px solid rgba(37,150,190,0.3)' }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
-              Free · No Sign-up · Instant Download
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-3 leading-tight">
-              Every PDF &amp; Image Tool<br />
-              <span style={{ color: '#7dd3fc' }}>You&apos;ll Ever Need</span>
-            </h1>
-            <p className="text-base mb-0 max-w-xl" style={{ color: '#94a3b8' }}>
-              Convert, compress, resize, watermark, OCR, remove backgrounds, merge, split, protect and more.
-              100% free — no account required.
-            </p>
-          </div>
-
-          {/* Right: stats */}
-          <div className="flex sm:flex-col gap-6 sm:gap-4 shrink-0">
-            {[
-              { value: `${totalTools}+`, label: 'Free Tools'     },
-              { value: '13',             label: 'Categories'      },
-              { value: '100%',           label: 'Free Forever'    },
-            ].map((s) => (
-              <div key={s.label} className="text-center sm:text-right">
-                <div className="text-2xl font-black text-white">{s.value}</div>
-                <div className="text-xs font-medium" style={{ color: '#bfdbfe' }}>{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* ══════════════════════════════════════════════════
           MAIN CONTENT
