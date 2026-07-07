@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
 import { HeaderNav } from './HeaderNav';
 
-export function Navbar({ totalTools }: { totalTools: number }) {
+export function Navbar() {
   const { user, logout, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -61,10 +61,6 @@ export function Navbar({ totalTools }: { totalTools: number }) {
         {/* Right side */}
         <div className="ml-auto flex items-center gap-3 lg:gap-4 shrink-0">
           <HeaderNav />
-
-          <span className="text-sm font-bold shrink-0 hidden sm:inline" style={{ color: '#2596be' }}>
-            {totalTools}+ Free Tools
-          </span>
 
           {/* Auth section */}
           {!authLoading && (
