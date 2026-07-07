@@ -1,164 +1,42 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { TOOLS, CATEGORIES } from './lib/tools';
 import { SiteShell } from './components/SiteShell';
 import { HeroSection } from './components/HeroSection';
-
-const pdfCategories   = CATEGORIES.filter((c) => !c.id.startsWith('img-'));
-const imageCategories = CATEGORIES.filter((c) =>  c.id.startsWith('img-'));
+import { PopularToolsSection } from './components/PopularToolsSection';
+import { WhyChooseUs } from './components/WhyChooseUs';
+import { FaqSection } from './components/FaqSection';
+import { ReviewsSection } from './components/ReviewsSection';
+import { BlogSection } from './components/BlogSection';
+import { HowOurToolsWork } from './components/HowOurToolsWork';
+import { SecurityTrustCta } from './components/SecurityTrustCta';
+import { ToolsCatalog } from './components/ToolsCatalog';
+import { SiteFooter } from './components/SiteFooter';
 
 export default function Home() {
-  const totalTools = TOOLS.length;
-
   return (
     <SiteShell>
 
       <HeroSection />
 
-      {/* ══════════════════════════════════════════════════
-          MAIN CONTENT
-      ══════════════════════════════════════════════════ */}
-      <div className="max-w-350 mx-auto px-4 sm:px-6 py-6">
+      <PopularToolsSection />
 
-        {/* ── MAIN CONTENT ─────────────────────────────── */}
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <main className="flex-1 min-w-0">
-
-          {/* PDF section banner */}
-          <div
-            id="pdf-section"
-            className="flex items-center gap-3 rounded-xl px-4 py-3 mb-4"
-            style={{ background: 'linear-gradient(90deg,#1d4ed8,#2596be)', color: '#fff' }}
-          >
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-xl shrink-0">📄</div>
-            <div>
-              <h2 className="text-base font-black leading-tight">PDF Document Tools</h2>
-              <p className="text-xs text-blue-100">
-                {TOOLS.filter((t) => !t.category.startsWith('img-')).length} tools · convert, edit &amp; manage PDFs
-              </p>
-            </div>
-          </div>
-
-          {pdfCategories.map((category) => {
-            const tools = TOOLS.filter((t) => t.category === category.id);
-            if (!tools.length) return null;
-            return <CategorySection key={category.id} category={category} tools={tools} />;
-          })}
-
-          {/* Image section banner */}
-          <div
-            id="img-section"
-            className="flex items-center gap-3 rounded-xl px-4 py-3 mb-4 mt-6"
-            style={{ background: 'linear-gradient(90deg,#7c3aed,#ec4899)', color: '#fff' }}
-          >
-            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center text-xl shrink-0">🖼️</div>
-            <div>
-              <h2 className="text-base font-black leading-tight">Digital Image Hub</h2>
-              <p className="text-xs text-purple-100">
-                {TOOLS.filter((t) => t.category.startsWith('img-')).length} tools · transform, enhance &amp; edit images
-              </p>
-            </div>
-          </div>
-
-          {imageCategories.map((category) => {
-            const tools = TOOLS.filter((t) => t.category === category.id);
-            if (!tools.length) return null;
-            return <CategorySection key={category.id} category={category} tools={tools} />;
-          })}
+          <ToolsCatalog />
         </main>
       </div>
 
-      {/* ══════════════════════════════════════════════════
-          FOOTER
-      ══════════════════════════════════════════════════ */}
-      <footer style={{ background: '#0f172a', borderTop: '1px solid #1e293b' }} className="mt-8">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <Image
-              src="/logo.webp"
-              alt="Digital Hub"
-              width={140}
-              height={42}
-              className="h-10 w-auto object-contain brightness-0 invert"
-            />
-            <div className="flex flex-wrap justify-center gap-3">
-              {CATEGORIES.map((cat) => (
-                <a
-                  key={cat.id}
-                  href={`#${cat.id}`}
-                  className="flex items-center gap-1.5 text-xs font-medium transition-colors hover:text-white"
-                  style={{ color: '#64748b' }}
-                >
-                  <span className="text-sm">{cat.icon}</span>
-                  {cat.label}
-                </a>
-              ))}
-            </div>
-          </div>
-          <div
-            className="mt-6 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
-            style={{ borderTop: '1px solid #1e293b' }}
-          >
-            <p className="text-xs" style={{ color: '#94a3b8' }}>
-              {totalTools} free PDF &amp; Image tools · No sign-up required
-            </p>
-            <p className="text-xs" style={{ color: '#94a3b8' }}>
-              Powered by {' '}
-              <a href="https://aurexone.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-white" style={{ color: '#2596be' }}>aurexone.com</a>
-            </p>
-          </div>
-        </div>
-      </footer>
+      <HowOurToolsWork />
+
+      <SecurityTrustCta />
+
+      <WhyChooseUs />
+
+      <ReviewsSection />
+
+      <BlogSection />
+
+      <FaqSection />
+
+      <SiteFooter />
     </SiteShell>
-  );
-}
-
-/* ─── CategorySection ──────────────────────────────────────────────────────── */
-
-function CategorySection({
-  category,
-  tools,
-}: {
-  category: (typeof CATEGORIES)[number];
-  tools: ReturnType<typeof TOOLS.filter>;
-}) {
-  return (
-    <section id={category.id} className="mb-5 scroll-mt-20">
-      {/* Compact header */}
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-base leading-none">{category.icon}</span>
-        <h3 className="text-sm font-bold text-gray-800">{category.label}</h3>
-        <span className="text-xs text-gray-400">({tools.length})</span>
-        <div className="flex-1 h-px ml-1" style={{ background: 'linear-gradient(90deg,#e5e7eb,transparent)' }} />
-      </div>
-
-      {/* Dense horizontal cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-1.5">
-        {tools.map((tool) => (
-          <Link
-            key={tool.slug}
-            href={`/tool/${tool.slug}`}
-            className="tool-card group flex items-center gap-2 bg-white rounded-xl px-2.5 py-2 hover:shadow-md transition-all duration-150"
-            style={{ border: `1.5px solid ${tool.borderColor}` }}
-          >
-            <div className="shrink-0 transition-transform duration-150 group-hover:scale-110">
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-sm"
-                style={{ background: tool.bgColor }}
-              >
-                {tool.icon}
-              </div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-gray-900 leading-tight truncate">{tool.name}</p>
-              <p className="text-[10px] text-gray-400 leading-tight truncate">{tool.description}</p>
-            </div>
-            <span
-              className="text-xs opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-150 shrink-0"
-              style={{ color: tool.color }}
-            >→</span>
-          </Link>
-        ))}
-      </div>
-    </section>
   );
 }

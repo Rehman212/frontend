@@ -30,16 +30,16 @@ export function Navbar() {
 
   return (
     <header
-      className="sticky top-0 z-50 border-b"
+      className="border-b"
       style={{ background: '#fff', borderColor: '#e5e7eb', boxShadow: '0 1px 12px rgba(37,150,190,0.08)' }}
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-20 flex items-center gap-3">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 h-16 flex items-center gap-2.5">
 
         {/* Sidebar drawer trigger — left of logo */}
         <button
           aria-label="Browse categories"
           onClick={() => window.dispatchEvent(new Event('open-sidebar'))}
-          className="flex flex-col justify-center items-center w-9 h-9 rounded-lg gap-1.5 hover:bg-gray-100 transition-colors shrink-0"
+          className="flex flex-col justify-center items-center w-8 h-8 rounded-lg gap-1 hover:bg-gray-100 transition-colors shrink-0"
         >
           <span className="w-5 h-0.5 rounded-full bg-gray-700 block" />
           <span className="w-3.5 h-0.5 rounded-full bg-gray-500 block" />
@@ -52,8 +52,8 @@ export function Navbar() {
             src="/Website_logo_1.2-RB.png"
             alt="Digital Hub"
             width={240}
-            height={72}
-            className="h-18 w-auto object-contain"
+            height={64}
+            className="h-12 sm:h-14 w-auto object-contain"
             priority
           />
         </Link>
@@ -122,14 +122,14 @@ export function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/login"
-                  className="px-4 py-1.5 rounded-lg text-sm font-bold transition-all hover:bg-gray-100"
+                  className="px-3.5 py-1 rounded-lg text-sm font-bold transition-all hover:bg-gray-100"
                   style={{ color: '#374151', border: '1.5px solid #e5e7eb' }}
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-4 py-1.5 rounded-lg text-sm font-bold text-white transition-all hover:opacity-90"
+                  className="px-3.5 py-1 rounded-lg text-sm font-bold text-white transition-all hover:opacity-90"
                   style={{ background: 'linear-gradient(135deg, #2596be, #1e7ea1)' }}
                 >
                   Sign Up

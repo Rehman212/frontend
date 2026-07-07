@@ -14,6 +14,7 @@ import {
   IconMenu,
   IconPages,
   IconPlus,
+  IconShield,
   IconUsers,
 } from './components/AdminIcons';
 
@@ -54,6 +55,12 @@ const NAV_SECTIONS: NavSection[] = [
     title: 'System',
     items: [
       { href: '/admin/users', label: 'Users', icon: <IconUsers className="w-[18px] h-[18px]" /> },
+      {
+        href: '/admin/admin-users',
+        label: 'Admin Users',
+        icon: <IconShield className="w-[18px] h-[18px]" />,
+        match: (p) => p.startsWith('/admin/admin-users'),
+      },
       // { href: '/admin/storage', label: 'Storage', icon: <IconStorage className="w-[18px] h-[18px]" /> },
     ],
   },
@@ -74,6 +81,7 @@ function pageTitle(pathname: string) {
     '/admin/blog/new': 'New Post',
     '/admin/storage': 'Storage',
     '/admin/users': 'Users',
+    '/admin/admin-users': 'Admin Users',
     '/admin/settings': 'Settings',
   };
   return map[pathname] ?? 'Admin';

@@ -31,12 +31,12 @@ function isMenuItemActive(itemUrl: string, pathname: string, hash: string): bool
 
 function linkClassName(isActive: boolean, isPrimary: boolean) {
   if (isActive) {
-    return 'px-3 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap text-[#2596be] bg-[#2596be]/15 ring-1 ring-[#2596be]/30';
+    return 'px-2.5 py-1.5 rounded-lg text-sm font-bold transition-colors whitespace-nowrap text-[#2596be] bg-[#2596be]/15 ring-1 ring-[#2596be]/30';
   }
   if (isPrimary) {
-    return 'px-3 py-2 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap text-[#2596be] bg-[#2596be]/10';
+    return 'px-2.5 py-1.5 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap text-[#2596be] bg-[#2596be]/10';
   }
-  return 'px-3 py-2 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap text-gray-600 hover:text-[#2596be] hover:bg-gray-50';
+  return 'px-2.5 py-1.5 rounded-lg text-sm font-semibold transition-colors whitespace-nowrap text-gray-600 hover:text-[#2596be] hover:bg-gray-50';
 }
 
 function NavLink({
