@@ -20,7 +20,9 @@ jobs:
           script: |
             cd ~/app/frontend
 
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
+            git clean -fd
 
             docker compose down
             docker compose up -d --build
