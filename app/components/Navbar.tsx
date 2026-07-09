@@ -132,7 +132,7 @@ export function Navbar() {
                   className="px-3.5 py-1 rounded-lg text-sm font-bold text-white transition-all hover:opacity-90"
                   style={{ background: 'linear-gradient(135deg, #2596be, #1e7ea1)' }}
                 >
-                  Sign Upp
+                  Sign Up
                 </Link>
               </div>
             )
