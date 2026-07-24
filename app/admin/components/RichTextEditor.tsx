@@ -5,18 +5,31 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 function countWords(html: string) {
   const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   if (!text) return 0;
-  return text.split(' ').filter(Boolean).length;
+  return text.split(/\s+/).filter(Boolean).length;
 }
+
+export { countWords };
 
 type RichTextEditorProps = {
   value: string;
   onChange: (html: string) => void;
+  /** Maximum allowed words. Omit or pass 0 for no limit. */
+  maxWords?: number;
 };
 
-export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
+export function RichTextEditor({
+  value,
+  onChange,
+  maxWords = 0,
+}: RichTextEditorProps) {
   const [tab, setTab] = useState<'visual' | 'code'>('visual');
   const editorRef = useRef<HTMLDivElement>(null);
   const syncing = useRef(false);
+  const lastValid = useRef(value);
+
+  useEffect(() => {
+    lastValid.current = value;
+  }, [value]);
 
   useEffect(() => {
     if (tab !== 'visual' || !editorRef.current || syncing.current) return;
@@ -25,12 +38,34 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     }
   }, [value, tab]);
 
+  const applyChange = useCallback(
+    (next: string) => {
+      if (maxWords > 0) {
+        const nextWords = countWords(next);
+        if (nextWords > maxWords) {
+          const prevWords = countWords(lastValid.current);
+          // Block growth past the limit; still allow shrinking an over-limit draft
+          if (nextWords >= prevWords) {
+            if (editorRef.current && tab === 'visual') {
+              editorRef.current.innerHTML = lastValid.current;
+            }
+            return false;
+          }
+        }
+      }
+      lastValid.current = next;
+      onChange(next);
+      return true;
+    },
+    [maxWords, onChange, tab],
+  );
+
   const syncFromVisual = useCallback(() => {
     if (!editorRef.current) return;
     syncing.current = true;
-    onChange(editorRef.current.innerHTML);
+    applyChange(editorRef.current.innerHTML);
     syncing.current = false;
-  }, [onChange]);
+  }, [applyChange]);
 
   const exec = (cmd: string, val?: string) => {
     document.execCommand(cmd, false, val);
@@ -76,13 +111,15 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     const url = window.prompt('Enter image URL:');
     if (!url) return;
     if (tab === 'code') {
-      onChange(value + `\n<img src="${url}" alt="" style="max-width:100%;height:auto;" />\n`);
+      applyChange(value + `\n<img src="${url}" alt="" style="max-width:100%;height:auto;" />\n`);
     } else {
       exec('insertHTML', `<img src="${url}" alt="" style="max-width:100%;height:auto;" />`);
     }
   };
 
   const words = countWords(value);
+  const overLimit = maxWords > 0 && words > maxWords;
+  const atLimit = maxWords > 0 && words >= maxWords;
 
   return (
     <div style={{ background: '#fff', color: '#1d2327' }}>
@@ -202,7 +239,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       ) : (
         <textarea
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => applyChange(e.target.value)}
           className="w-full min-h-[380px] px-4 py-3 outline-none font-mono text-[13px] leading-relaxed resize-y"
           style={{ color: '#1d2327', border: 'none' }}
           spellCheck={false}
@@ -210,10 +247,23 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       )}
 
       <div
-        className="px-3 py-1.5 text-[11px]"
-        style={{ borderTop: '1px solid #dcdcde', background: '#f6f7f7', color: '#646970' }}
+        className="px-3 py-1.5 text-[11px] flex items-center justify-between gap-2"
+        style={{
+          borderTop: '1px solid #dcdcde',
+          background: overLimit ? '#fef2f2' : '#f6f7f7',
+          color: overLimit ? '#b91c1c' : '#646970',
+        }}
       >
-        Word count: {words}
+        <span>
+          Word count: {words}
+          {maxWords > 0 ? ` / ${maxWords}` : ''}
+          {atLimit ? ' — limit reached' : ''}
+        </span>
+        {maxWords > 0 && (
+          <span style={{ color: overLimit ? '#b91c1c' : '#646970' }}>
+            Max {maxWords.toLocaleString()} words
+          </span>
+        )}
       </div>
     </div>
   );

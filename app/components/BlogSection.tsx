@@ -20,89 +20,30 @@ type BlogDisplayItem = {
   image: string;
 };
 
-const FEATURED_BLOGS: BlogDisplayItem[] = [
-  {
-    id: 'featured-1',
-    title: 'How to Merge PDF Files Online in Seconds',
-    href: '/tool/merge',
-    excerpt: 'Learn the fastest way to combine multiple PDFs into one document — no software, no sign-up, completely free.',
-    author: 'Digital Hub Team',
-    createdAt: '2026-06-15T10:00:00.000Z',
-    category: 'PDF Guide',
-    readTime: 4,
-    gradient: 'linear-gradient(145deg, #020617 0%, #1e3a5f 45%, #2596be 100%)',
-    glow: '#2596be',
-    icon: 'pdf',
-    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'featured-2',
-    title: 'Compress PDFs Without Losing Quality',
-    href: '/tool/compress',
-    excerpt: 'Reduce file size for email and web while keeping text sharp and images clear. Step-by-step best practices inside.',
-    author: 'Digital Hub Team',
-    createdAt: '2026-06-08T10:00:00.000Z',
-    category: 'Workflow',
-    readTime: 5,
-    gradient: 'linear-gradient(145deg, #0f172a 0%, #312e81 50%, #6366f1 100%)',
-    glow: '#6366f1',
-    icon: 'spark',
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'featured-3',
-    title: 'OCR Explained: Extract Text from Any PDF',
-    href: '/tool/ocr',
-    excerpt: 'Turn scanned documents into editable, searchable text with AI-powered OCR — perfect for invoices and archives.',
-    author: 'Digital Hub Team',
-    createdAt: '2026-05-28T10:00:00.000Z',
-    category: 'AI Guide',
-    readTime: 6,
-    gradient: 'linear-gradient(145deg, #042f2e 0%, #134e4a 50%, #14b8a6 100%)',
-    glow: '#14b8a6',
-    icon: 'scan',
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
-  },
-  {
-    id: 'featured-4',
-    title: '10 Free Image Tools Every Creator Needs',
-    href: '/#img-section',
-    excerpt: 'From background removal to batch resize — discover the essential image tools that save hours every week.',
-    author: 'Digital Hub Team',
-    createdAt: '2026-05-20T10:00:00.000Z',
-    category: 'Tutorial',
-    readTime: 7,
-    gradient: 'linear-gradient(145deg, #4a044e 0%, #86198f 50%, #db2777 100%)',
-    glow: '#db2777',
-    icon: 'image',
-    image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=800&auto=format&fit=crop&q=80',
-  },
-];
-
 const CARD_STYLES = [
   {
     gradient: 'linear-gradient(145deg, #020617 0%, #1e3a5f 45%, #2596be 100%)',
     glow: '#2596be',
     icon: 'pdf' as const,
-    image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&auto=format&fit=crop&q=80',
+    fallbackImage: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&auto=format&fit=crop&q=80',
   },
   {
     gradient: 'linear-gradient(145deg, #0f172a 0%, #312e81 50%, #6366f1 100%)',
     glow: '#6366f1',
     icon: 'spark' as const,
-    image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=80',
+    fallbackImage: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&auto=format&fit=crop&q=80',
   },
   {
     gradient: 'linear-gradient(145deg, #042f2e 0%, #134e4a 50%, #14b8a6 100%)',
     glow: '#14b8a6',
     icon: 'scan' as const,
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
+    fallbackImage: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&auto=format&fit=crop&q=80',
   },
   {
     gradient: 'linear-gradient(145deg, #4a044e 0%, #86198f 50%, #db2777 100%)',
     glow: '#db2777',
     icon: 'image' as const,
-    image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=800&auto=format&fit=crop&q=80',
+    fallbackImage: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=800&auto=format&fit=crop&q=80',
   },
 ];
 
@@ -133,16 +74,16 @@ function postToDisplay(post: BlogPost, index: number): BlogDisplayItem {
     gradient: style.gradient,
     glow: style.glow,
     icon: style.icon,
-    image: style.image,
+    image: post.featuredImage?.trim() || style.fallbackImage,
   };
 }
 
-function buildBlogList(apiPosts: BlogPost[]): BlogDisplayItem[] {
-  const fromApi = apiPosts.slice(0, 4).map(postToDisplay);
-  if (fromApi.length >= 4) return fromApi;
-  const usedIds = new Set(fromApi.map((p) => p.id));
-  const fillers = FEATURED_BLOGS.filter((f) => !usedIds.has(f.id));
-  return [...fromApi, ...fillers].slice(0, 4);
+/** Newest published posts first — homepage shows only the latest 4. */
+function buildLatestPosts(apiPosts: BlogPost[]): BlogDisplayItem[] {
+  return [...apiPosts]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 4)
+    .map(postToDisplay);
 }
 
 function CardIcon({ type, small }: { type: BlogDisplayItem['icon']; small?: boolean }) {
@@ -186,7 +127,6 @@ function BlogCard({ post }: { post: BlogDisplayItem }) {
   return (
     <article className="group relative flex flex-col h-full rounded-2xl bg-white border border-slate-200/80 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(37,150,190,0.15)] hover:border-[#2596be]/30">
       <Link href={post.href} className="flex flex-col h-full">
-        {/* Cover image */}
         <div className="relative h-48 overflow-hidden">
           <Image
             src={post.image}
@@ -194,6 +134,7 @@ function BlogCard({ post }: { post: BlogDisplayItem }) {
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+            unoptimized
           />
           <div
             className="absolute inset-0 mix-blend-multiply opacity-70"
@@ -229,7 +170,6 @@ function BlogCard({ post }: { post: BlogDisplayItem }) {
           </div>
         </div>
 
-        {/* Content */}
         <div className="flex flex-col flex-1 p-5 sm:p-6">
           <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider mb-3">
             <time dateTime={post.createdAt} className="text-[#2596be]">
@@ -286,7 +226,7 @@ export function BlogSection() {
       .finally(() => setLoading(false));
   }, []);
 
-  const blogs = useMemo(() => buildBlogList(apiPosts), [apiPosts]);
+  const blogs = useMemo(() => buildLatestPosts(apiPosts), [apiPosts]);
 
   return (
     <section className="relative py-14 sm:py-20 overflow-hidden bg-[#f4f6f8] border-t border-slate-200/80">
@@ -335,6 +275,11 @@ export function BlogSection() {
             {[1, 2, 3, 4].map((n) => (
               <BlogCardSkeleton key={n} />
             ))}
+          </div>
+        ) : blogs.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 px-6 py-14 text-center">
+            <p className="text-sm font-semibold text-slate-700">No published articles yet</p>
+            <p className="text-sm text-slate-500 mt-1">Publish a blog post to see it here automatically.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6">

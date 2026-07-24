@@ -1,5 +1,7 @@
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
+export const MAX_FEATURED_IMAGE_BYTES = 100 * 1024; // 100KB
+
 export interface BlogPost {
   id: string;
   title: string;
@@ -11,6 +13,7 @@ export interface BlogPost {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
+  featuredImage: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -24,6 +27,7 @@ export type PostPayload = {
   seoTitle?: string;
   seoDescription?: string;
   seoKeywords?: string;
+  featuredImage?: string;
 };
 
 function authHeaders(token: string) {
@@ -80,6 +84,20 @@ export async function deletePost(token: string, id: string): Promise<void> {
     headers: authHeaders(token),
   });
   if (!res.ok) throw new Error(await parseError(res, 'Failed to delete post'));
+}
+
+/** Upload featured image to /public/uploads — WebP only, max 100KB. */
+export async function uploadFeaturedImage(token: string, file: File): Promise<string> {
+  const fd = new FormData();
+  fd.append('file', file);
+  const res = await fetch('/api/upload/featured-image', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: fd,
+  });
+  if (!res.ok) throw new Error(await parseError(res, 'Failed to upload featured image'));
+  const data = (await res.json()) as { url: string };
+  return data.url;
 }
 
 /** Public — published posts only (no auth) */

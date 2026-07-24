@@ -13,9 +13,17 @@ import {
   TextArea,
   TextInput,
 } from '../../components/AdminUi';
-import { RichTextEditor } from '../../components/RichTextEditor';
+import { RichTextEditor, countWords } from '../../components/RichTextEditor';
 import { SeoPanel } from '../../components/SeoPanel';
-import { createPost, fetchPost, updatePost } from '../../lib/posts-api';
+import {
+  createPost,
+  fetchPost,
+  updatePost,
+  uploadFeaturedImage,
+  MAX_FEATURED_IMAGE_BYTES,
+} from '../../lib/posts-api';
+
+const MAX_POST_WORDS = 5000;
 
 function slugify(text: string) {
   return text
@@ -39,10 +47,12 @@ function BlogPostForm() {
   const [seoTitle, setSeoTitle] = useState('');
   const [seoDescription, setSeoDescription] = useState('');
   const [seoKeywords, setSeoKeywords] = useState('');
+  const [featuredImage, setFeaturedImage] = useState('');
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
   const [slugManual, setSlugManual] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [loading, setLoading] = useState(!!editId);
   const [error, setError] = useState('');
 
@@ -58,6 +68,7 @@ function BlogPostForm() {
         setSeoTitle(post.seoTitle ?? '');
         setSeoDescription(post.seoDescription ?? '');
         setSeoKeywords(post.seoKeywords ?? '');
+        setFeaturedImage(post.featuredImage ?? '');
         setStatus(post.status);
         setSlugManual(true);
       })
@@ -69,8 +80,40 @@ function BlogPostForm() {
     if (!slugManual && title) setSlug(slugify(title));
   }, [title, slugManual]);
 
+  const handleFeaturedImageChange = async (file: File | null) => {
+    if (!file || !token) return;
+
+    const name = file.name.toLowerCase();
+    if (!name.endsWith('.webp') || file.type !== 'image/webp') {
+      setError('Featured image must be a .webp file only.');
+      return;
+    }
+    if (file.size > MAX_FEATURED_IMAGE_BYTES) {
+      setError(`Featured image must be 100KB or smaller (yours is ${Math.ceil(file.size / 1024)}KB).`);
+      return;
+    }
+
+    setError('');
+    setUploadingImage(true);
+    try {
+      const url = await uploadFeaturedImage(token, file);
+      setFeaturedImage(url);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to upload featured image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSave = async (publish: boolean) => {
     if (!title.trim() || !token) return;
+
+    const wordCount = countWords(content);
+    if (wordCount > MAX_POST_WORDS) {
+      setError(`Content exceeds the ${MAX_POST_WORDS.toLocaleString()}-word limit (${wordCount.toLocaleString()} words).`);
+      return;
+    }
+
     setSaving(true);
     setError('');
 
@@ -83,6 +126,7 @@ function BlogPostForm() {
       seoTitle,
       seoDescription,
       seoKeywords,
+      featuredImage,
       status: finalStatus as 'draft' | 'published',
     };
 
@@ -104,6 +148,9 @@ function BlogPostForm() {
   if (loading) {
     return <div className="text-gray-500 text-sm py-10">Loading post...</div>;
   }
+
+  const wordCount = countWords(content);
+  const overWordLimit = wordCount > MAX_POST_WORDS;
 
   return (
     <div>
@@ -158,7 +205,7 @@ function BlogPostForm() {
               <FieldLabel>Content</FieldLabel>
             </div>
             <div className="mx-5 mb-5 rounded-sm overflow-hidden" style={{ border: '1px solid #c3c4c7' }}>
-              <RichTextEditor value={content} onChange={setContent} />
+              <RichTextEditor value={content} onChange={setContent} maxWords={MAX_POST_WORDS} />
             </div>
           </Card>
 
@@ -177,6 +224,48 @@ function BlogPostForm() {
         </div>
 
         <div className="space-y-4">
+          <Card>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Featured Image</h3>
+            <p className="text-[11px] text-gray-500 mb-3 leading-relaxed">
+              WebP only · max 100KB. Shown on homepage Latest Articles and blog cards.
+            </p>
+            {featuredImage ? (
+              <div className="mb-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={featuredImage} alt="Featured" className="w-full h-36 object-cover" />
+              </div>
+            ) : (
+              <div className="mb-3 h-36 rounded-lg border border-dashed border-gray-300 bg-gray-50 flex items-center justify-center text-xs text-gray-400">
+                No image selected
+              </div>
+            )}
+            <input
+              type="file"
+              accept=".webp,image/webp"
+              disabled={uploadingImage || !token}
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                e.target.value = '';
+                void handleFeaturedImageChange(file);
+              }}
+              className="block w-full text-xs text-gray-600 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#2596be]/10 file:text-[#1e7ea1] hover:file:bg-[#2596be]/20"
+            />
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <p className="text-[11px] text-gray-400">
+                {uploadingImage ? 'Uploading…' : featuredImage ? 'Image ready' : 'Choose a .webp file'}
+              </p>
+              {featuredImage && (
+                <button
+                  type="button"
+                  onClick={() => setFeaturedImage('')}
+                  className="text-[11px] font-semibold text-red-600 hover:underline"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </Card>
+
           <Card>
             <h3 className="text-sm font-semibold text-gray-900 mb-4">Publish</h3>
             <div className="space-y-3">
@@ -197,10 +286,16 @@ function BlogPostForm() {
                     {error}
                   </p>
                 )}
-                <PrimaryButton onClick={() => handleSave(true)} disabled={saving || !title.trim() || !token}>
+                <PrimaryButton
+                  onClick={() => handleSave(true)}
+                  disabled={saving || uploadingImage || !title.trim() || !token || overWordLimit}
+                >
                   {saving ? 'Saving...' : saved ? 'Saved!' : 'Publish Post'}
                 </PrimaryButton>
-                <SecondaryButton onClick={() => handleSave(false)} disabled={saving || !title.trim() || !token}>
+                <SecondaryButton
+                  onClick={() => handleSave(false)}
+                  disabled={saving || uploadingImage || !title.trim() || !token || overWordLimit}
+                >
                   Save as Draft
                 </SecondaryButton>
               </div>
@@ -212,6 +307,8 @@ function BlogPostForm() {
             <ul className="text-xs text-gray-500 space-y-2 leading-relaxed">
               <li>• Use a clear, descriptive title for SEO</li>
               <li>• Keep excerpt under 160 characters</li>
+              <li>• Featured image: .webp only, max 100KB</li>
+              <li>• Content limit: max {MAX_POST_WORDS.toLocaleString()} words</li>
               <li>• Save as draft to preview before publishing</li>
             </ul>
           </Card>

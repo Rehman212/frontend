@@ -87,6 +87,16 @@ export function BlogPostViewer({ slug }: { slug: string }) {
             </p>
           )}
         </div>
+        {post.featuredImage && (
+          <div className="mb-8 rounded-2xl overflow-hidden border border-gray-200">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.featuredImage}
+              alt={post.title}
+              className="w-full max-h-[420px] object-cover"
+            />
+          </div>
+        )}
         <div
           className="prose-page text-gray-700 text-[15px] leading-relaxed"
           dangerouslySetInnerHTML={{ __html: post.content || '<p>No content yet.</p>' }}

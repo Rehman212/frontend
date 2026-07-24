@@ -15,6 +15,7 @@ import {
   IconPages,
   IconPlus,
   IconShield,
+  IconSitemap,
   IconUsers,
 } from './components/AdminIcons';
 
@@ -49,6 +50,11 @@ const NAV_SECTIONS: NavSection[] = [
         icon: <IconBlog className="w-[18px] h-[18px]" />,
         match: (p) => p.startsWith('/admin/blog'),
       },
+      {
+        href: '/admin/sitemap',
+        label: 'Sitemap',
+        icon: <IconSitemap className="w-[18px] h-[18px]" />,
+      },
     ],
   },
   {
@@ -79,6 +85,7 @@ function pageTitle(pathname: string) {
     '/admin/pages/new': 'Page Editor',
     '/admin/blog': 'Blog',
     '/admin/blog/new': 'New Post',
+    '/admin/sitemap': 'Sitemap',
     '/admin/storage': 'Storage',
     '/admin/users': 'Users',
     '/admin/admin-users': 'Admin Users',

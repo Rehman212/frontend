@@ -21,13 +21,24 @@ function BlogCard({ post }: { post: BlogPost }) {
           className="relative h-36 flex items-center justify-center overflow-hidden"
           style={{ background: 'linear-gradient(135deg, #112240 0%, #1e3a5f 50%, #2596be 100%)' }}
         >
-          <div
-            className="absolute inset-0 opacity-20"
-            style={{ background: 'radial-gradient(circle at 80% 20%, #7dd3fc, transparent 55%)' }}
-          />
-          <div className="relative w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-white/15 backdrop-blur-sm border border-white/20">
-            📝
-          </div>
+          {post.featuredImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.featuredImage}
+              alt={post.title}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <>
+              <div
+                className="absolute inset-0 opacity-20"
+                style={{ background: 'radial-gradient(circle at 80% 20%, #7dd3fc, transparent 55%)' }}
+              />
+              <div className="relative w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-white/15 backdrop-blur-sm border border-white/20">
+                📝
+              </div>
+            </>
+          )}
         </div>
 
         <div className="flex flex-col flex-1 p-5">

@@ -17,17 +17,31 @@ const QUICK_LINKS = [
   { label: 'All PDF Tools', href: '/#pdf-section' },
   { label: 'All Image Tools', href: '/#img-section' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Sitemap', href: '/sitemap.xml' },
   { label: 'Login', href: '/login' },
   { label: 'Sign Up', href: '/signup' },
 ];
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const className =
+    'group inline-flex items-center gap-1.5 text-[13px] text-slate-400 hover:text-[#7dd3fc] transition-colors';
+  const bullet = (
+    <span className="w-1 h-1 rounded-full bg-slate-600 group-hover:bg-[#2596be] transition-colors shrink-0" />
+  );
+
+  // XML / non-page assets need a full document navigation
+  if (href.endsWith('.xml')) {
+    return (
+      <a href={href} className={className}>
+        {bullet}
+        {children}
+      </a>
+    );
+  }
+
   return (
-    <Link
-      href={href}
-      className="group inline-flex items-center gap-1.5 text-[13px] text-slate-400 hover:text-[#7dd3fc] transition-colors"
-    >
-      <span className="w-1 h-1 rounded-full bg-slate-600 group-hover:bg-[#2596be] transition-colors shrink-0" />
+    <Link href={href} className={className}>
+      {bullet}
       {children}
     </Link>
   );
