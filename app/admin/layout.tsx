@@ -14,6 +14,7 @@ import {
   IconMenu,
   IconPages,
   IconPlus,
+  IconSettings,
   IconShield,
   IconSitemap,
   IconUsers,
@@ -67,7 +68,11 @@ const NAV_SECTIONS: NavSection[] = [
         icon: <IconShield className="w-[18px] h-[18px]" />,
         match: (p) => p.startsWith('/admin/admin-users'),
       },
-      // { href: '/admin/storage', label: 'Storage', icon: <IconStorage className="w-[18px] h-[18px]" /> },
+      {
+        href: '/admin/settings',
+        label: 'Settings',
+        icon: <IconSettings className="w-[18px] h-[18px]" />,
+      },
     ],
   },
 ];

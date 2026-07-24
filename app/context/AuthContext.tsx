@@ -23,6 +23,12 @@ interface AuthCtx {
   adminLogin: (email: string, password: string) => Promise<AuthUser>;
   signup: (email: string, username: string, password: string) => Promise<AuthUser>;
   logout: () => void;
+  updateProfile: (payload: {
+    username?: string;
+    email?: string;
+    currentPassword?: string;
+    newPassword?: string;
+  }) => Promise<AuthUser>;
 }
 
 const AuthContext = createContext<AuthCtx | null>(null);
@@ -128,8 +134,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
   }, []);
 
+  const updateProfile = useCallback(
+    async (payload: {
+      username?: string;
+      email?: string;
+      currentPassword?: string;
+      newPassword?: string;
+    }) => {
+      if (!token) throw new Error('Not signed in');
+      const res = await fetch(`${API_BASE}/auth/profile`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const d = (await res.json().catch(() => ({}))) as { message?: string | string[] };
+        const msg = Array.isArray(d.message) ? d.message.join(', ') : d.message;
+        throw new Error(msg || 'Failed to update profile');
+      }
+      const data = (await res.json()) as { access_token: string; user: AuthUser };
+      persist(data.user, data.access_token);
+      return data.user;
+    },
+    [persist, token],
+  );
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, adminLogin, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, token, loading, login, adminLogin, signup, logout, updateProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

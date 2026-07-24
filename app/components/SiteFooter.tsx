@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { CATEGORIES } from '../lib/tools';
+import { useSiteBranding } from '../context/BrandingContext';
 
 const pdfCategories = CATEGORIES.filter((c) => !c.id.startsWith('img-'));
 const imageCategories = CATEGORIES.filter((c) => c.id.startsWith('img-'));
@@ -29,7 +32,6 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
     <span className="w-1 h-1 rounded-full bg-slate-600 group-hover:bg-[#2596be] transition-colors shrink-0" />
   );
 
-  // XML / non-page assets need a full document navigation
   if (href.endsWith('.xml')) {
     return (
       <a href={href} className={className}>
@@ -60,6 +62,7 @@ function FooterColumn({ title, children }: { title: string; children: React.Reac
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
+  const { branding } = useSiteBranding();
 
   return (
     <footer
@@ -74,11 +77,12 @@ export function SiteFooter() {
           <div className="xl:w-[340px] xl:shrink-0">
             <Link href="/" className="inline-block mb-5">
               <Image
-                src="/Website_logo_1.2-RB.png"
+                src={branding.footerLogo}
                 alt="Digital Hub"
                 width={280}
                 height={84}
                 className="h-16 sm:h-[4.5rem] w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity"
+                unoptimized
               />
             </Link>
             <p className="text-[13px] text-slate-400 leading-relaxed mb-5">

@@ -5,10 +5,12 @@ import Image from 'next/image';
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../context/AuthContext';
+import { useSiteBranding } from '../context/BrandingContext';
 import { HeaderNav } from './HeaderNav';
 
 export function Navbar() {
   const { user, logout, loading: authLoading } = useAuth();
+  const { branding } = useSiteBranding();
   const router = useRouter();
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -49,12 +51,13 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="shrink-0">
           <Image
-            src="/Website_logo_1.2-RB.png"
+            src={branding.headerLogo}
             alt="Digital Hub"
             width={240}
             height={64}
             className="h-12 sm:h-14 w-auto object-contain"
             priority
+            unoptimized
           />
         </Link>
 
