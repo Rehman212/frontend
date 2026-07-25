@@ -12,11 +12,13 @@ import {
   TextInput,
 } from '../components/AdminUi';
 
+const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
+
 async function uploadLogo(token: string, file: File, kind: 'header' | 'footer') {
   const fd = new FormData();
   fd.append('file', file);
   fd.append('kind', kind);
-  const res = await fetch('/api/upload/site-logo', {
+  const res = await fetch(`${API}/admin/media`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: fd,
@@ -228,7 +230,7 @@ export default function SettingsPage() {
         <Card>
           <h2 className="text-sm font-bold text-gray-900 mb-1">Site Logos</h2>
           <p className="text-xs text-gray-500 mb-5">
-            PNG, WebP, JPG or SVG · max 500KB each. Saved to <code className="text-[11px]">/uploads</code>.
+            PNG, WebP or JPG · max 500KB. Stored in cloud (S3) so live site can load them.
           </p>
 
           <div className="space-y-6">

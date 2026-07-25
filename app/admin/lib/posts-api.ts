@@ -86,11 +86,12 @@ export async function deletePost(token: string, id: string): Promise<void> {
   if (!res.ok) throw new Error(await parseError(res, 'Failed to delete post'));
 }
 
-/** Upload featured image to /public/uploads — WebP only, max 100KB. */
+/** Upload featured image to S3 via backend API — WebP only, max 100KB.
+ *  Uses public S3 URL so images work on both local and live site. */
 export async function uploadFeaturedImage(token: string, file: File): Promise<string> {
   const fd = new FormData();
   fd.append('file', file);
-  const res = await fetch('/api/upload/featured-image', {
+  const res = await fetch(`${API}/admin/posts/featured-image`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: fd,

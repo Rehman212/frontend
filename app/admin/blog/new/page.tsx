@@ -227,7 +227,7 @@ function BlogPostForm() {
           <Card>
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Featured Image</h3>
             <p className="text-[11px] text-gray-500 mb-3 leading-relaxed">
-              WebP only · max 100KB. Shown on homepage Latest Articles and blog cards.
+              WebP only · max 100KB. Uploaded to cloud storage so it works on live site too.
             </p>
             {featuredImage ? (
               <div className="mb-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
