@@ -127,7 +127,7 @@ export function HeroSection() {
                 href="/tool/merge"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold w-full sm:w-auto hero-cta-secondary"
               >
-                <span>🔀</span> Merge PDF — Most Popular
+                <span>🔀</span> Merge PDF — Most Popularsss
               </Link>
             </div>
 
