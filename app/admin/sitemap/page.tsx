@@ -97,7 +97,7 @@ export default function AdminSitemapPage() {
     <div>
       <PageHeader
         title="Sitemap"
-        description="Live overview of URLs included in sitemap.xml. New published posts and tools appear automatically."
+        description="Live overview of URLs included in sitemap.xml. New published posts and pages appear automatically."
         action={
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -164,7 +164,7 @@ export default function AdminSitemapPage() {
               {fullXmlUrl}
             </a>
             <p className="text-xs text-gray-500 mt-1.5">
-              Search engines read this file. It refreshes automatically when you publish blog posts or add tools.
+              Search engines read this file. It refreshes automatically when you publish blog posts or CMS pages.
             </p>
           </div>
         </div>

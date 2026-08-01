@@ -58,6 +58,17 @@ export async function fetchPost(token: string, id: string): Promise<BlogPost> {
   return res.json();
 }
 
+async function bumpSitemap(token: string) {
+  try {
+    await fetch('/api/revalidate-sitemap', {
+      method: 'POST',
+      headers: authHeaders(token),
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
 export async function createPost(token: string, payload: PostPayload): Promise<BlogPost> {
   const res = await fetch(`${API}/admin/posts`, {
     method: 'POST',
@@ -65,7 +76,9 @@ export async function createPost(token: string, payload: PostPayload): Promise<B
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error(await parseError(res, 'Failed to create post'));
-  return res.json();
+  const post = (await res.json()) as BlogPost;
+  if (payload.status === 'published') await bumpSitemap(token);
+  return post;
 }
 
 export async function updatePost(token: string, id: string, payload: PostPayload): Promise<BlogPost> {
@@ -75,7 +88,9 @@ export async function updatePost(token: string, id: string, payload: PostPayload
     body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error(await parseError(res, 'Failed to update post'));
-  return res.json();
+  const post = (await res.json()) as BlogPost;
+  await bumpSitemap(token);
+  return post;
 }
 
 export async function deletePost(token: string, id: string): Promise<void> {
@@ -84,6 +99,7 @@ export async function deletePost(token: string, id: string): Promise<void> {
     headers: authHeaders(token),
   });
   if (!res.ok) throw new Error(await parseError(res, 'Failed to delete post'));
+  await bumpSitemap(token);
 }
 
 /** Upload featured image to S3 via backend API — WebP only, max 100KB.

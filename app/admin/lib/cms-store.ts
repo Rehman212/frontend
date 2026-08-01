@@ -96,6 +96,60 @@ export function getAllKnownPageSlugs(): string[] {
   return [...slugs].filter((s) => !CMS_RESERVED_SLUGS.has(s));
 }
 
+/** Published + public page slugs that should appear in sitemap.xml */
+export function getSitemapPageSlugs(pages?: CmsPage[]): string[] {
+  const list = pages ?? cmsStore.getPages();
+  return list
+    .filter((p) => p.status === 'published' && p.visibility !== 'private')
+    .map((p) => p.slug)
+    .filter((s) => s && !CMS_RESERVED_SLUGS.has(s));
+}
+
+function getAuthToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem('auth');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { token?: string };
+    return parsed.token || null;
+  } catch {
+    return null;
+  }
+}
+
+/** Push published page slugs to disk so /sitemap.xml stays in sync */
+export async function syncCmsSlugsToSitemap(pages?: CmsPage[]): Promise<void> {
+  const token = getAuthToken();
+  if (!token) return;
+  const slugs = getSitemapPageSlugs(pages);
+  try {
+    await fetch('/api/cms-slugs', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ slugs }),
+    });
+  } catch {
+    /* non-blocking — localStorage pages still work */
+  }
+}
+
+/** Refresh sitemap.xml after blog publish/update */
+export async function revalidateSitemap(): Promise<void> {
+  const token = getAuthToken();
+  if (!token) return;
+  try {
+    await fetch('/api/revalidate-sitemap', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
 export const cmsStore = {
   getMenu(): MenuItem[] {
     return read(KEYS.menu, DEFAULT_MENU);
@@ -131,6 +185,7 @@ export const cmsStore = {
   savePages(pages: CmsPage[]) {
     write(KEYS.pages, pages);
     write(KEYS.pageSlugs, pages.map((p) => p.slug));
+    void syncCmsSlugsToSitemap(pages);
   },
   addPage(page: Omit<CmsPage, 'id' | 'createdAt' | 'updatedAt'>): CmsPage {
     const pages = cmsStore.getPages();
@@ -147,6 +202,7 @@ export const cmsStore = {
   /** Call after save — keeps slug list for menu / future build sync */
   syncSlugList(pages: CmsPage[]) {
     write(KEYS.pageSlugs, pages.map((p) => p.slug));
+    void syncCmsSlugsToSitemap(pages);
   },
   deletePage(id: string) {
     const pages = cmsStore.getPages().filter((p) => p.id !== id);
