@@ -10,7 +10,14 @@ import {
   PageHeader,
   PrimaryButton,
 } from '../components/AdminUi';
-import { cmsStore, type CmsPage } from '../lib/cms-store';
+import { useAuth } from '../../context/AuthContext';
+import { type CmsPage } from '../lib/cms-store';
+import {
+  deletePage,
+  fetchPages,
+  migrateLocalPagesIfNeeded,
+  updatePage,
+} from '../lib/pages-api';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -21,32 +28,53 @@ function formatDate(iso: string) {
 }
 
 export default function PagesAdminPage() {
+  const { token } = useAuth();
   const [pages, setPages] = useState<CmsPage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const load = () => setPages(cmsStore.getPages());
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  const toggleStatus = (id: string) => {
-    const next = pages.map((p) =>
-      p.id === id
-        ? {
-            ...p,
-            status: p.status === 'published' ? 'draft' as const : 'published' as const,
-            updatedAt: new Date().toISOString(),
-          }
-        : p,
-    );
-    setPages(next);
-    cmsStore.savePages(next);
+  const load = async () => {
+    if (!token) return;
+    setError('');
+    try {
+      await migrateLocalPagesIfNeeded(token);
+      setPages(await fetchPages(token));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to load pages');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deletePage = (id: string) => {
+  useEffect(() => {
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  const toggleStatus = async (page: CmsPage) => {
+    if (!token) return;
+    const status = page.status === 'published' ? 'draft' : 'published';
+    const saved = await updatePage(token, page.id, {
+      title: page.title,
+      slug: page.slug,
+      content: page.content,
+      status,
+      visibility: page.visibility,
+      parentId: page.parentId,
+      template: page.template,
+      order: page.order,
+      seoTitle: page.seoTitle,
+      seoDescription: page.seoDescription,
+      seoKeywords: page.seoKeywords,
+    });
+    setPages((prev) => prev.map((p) => (p.id === saved.id ? saved : p)));
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!token) return;
     if (!confirm('Delete this page? This cannot be undone.')) return;
-    cmsStore.deletePage(id);
-    load();
+    await deletePage(token, id);
+    await load();
   };
 
   const published = pages.filter((p) => p.status === 'published').length;
@@ -55,7 +83,7 @@ export default function PagesAdminPage() {
     <div>
       <PageHeader
         title="Pages"
-        description="Manage static pages like About, Privacy Policy, and Terms of Service."
+        description="Manage static pages like About, Privacy Policy, and Terms of Service. Pages are shared with every admin."
         action={
           <PrimaryButton href="/admin/pages/new">
             <IconPlus className="w-4 h-4" />
@@ -64,23 +92,31 @@ export default function PagesAdminPage() {
         }
       />
 
+      {error && (
+        <div className="mb-4 px-4 py-3 rounded-lg text-sm bg-red-50 text-red-700 border border-red-100">
+          {error}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6 max-w-lg">
         <Card padding="p-4">
-          <p className="text-2xl font-bold text-gray-900">{pages.length}</p>
+          <p className="text-2xl font-bold text-gray-900">{loading ? '—' : pages.length}</p>
           <p className="text-xs text-gray-500 mt-1">Total Pages</p>
         </Card>
         <Card padding="p-4">
-          <p className="text-2xl font-bold text-gray-900">{published}</p>
+          <p className="text-2xl font-bold text-gray-900">{loading ? '—' : published}</p>
           <p className="text-xs text-gray-500 mt-1">Published</p>
         </Card>
         <Card padding="p-4 col-span-2 sm:col-span-1">
-          <p className="text-2xl font-bold text-gray-900">{pages.length - published}</p>
+          <p className="text-2xl font-bold text-gray-900">{loading ? '—' : pages.length - published}</p>
           <p className="text-xs text-gray-500 mt-1">Drafts</p>
         </Card>
       </div>
 
       <Card padding="p-0" className="overflow-hidden">
-        {pages.length === 0 ? (
+        {loading ? (
+          <p className="text-sm text-gray-500 px-5 py-8 text-center">Loading pages...</p>
+        ) : pages.length === 0 ? (
           <EmptyState
             title="No pages yet"
             description="Create your first static page for the website."
@@ -140,14 +176,14 @@ export default function PagesAdminPage() {
                         <button
                           type="button"
                           className="text-xs font-medium text-gray-500 hover:text-gray-700"
-                          onClick={() => toggleStatus(page.id)}
+                          onClick={() => void toggleStatus(page)}
                         >
                           {page.status === 'published' ? 'Unpublish' : 'Publish'}
                         </button>
                         <button
                           type="button"
                           className="text-xs font-medium text-red-500 hover:text-red-600"
-                          onClick={() => deletePage(page.id)}
+                          onClick={() => void handleDelete(page.id)}
                         >
                           Delete
                         </button>

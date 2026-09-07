@@ -65,6 +65,14 @@ export function Navbar() {
         <div className="ml-auto flex items-center gap-3 lg:gap-4 shrink-0">
           <HeaderNav />
 
+          <Link
+            href="/blog"
+            className="lg:hidden px-2.5 py-1 rounded-lg text-sm font-bold transition-all hover:bg-gray-100"
+            style={{ color: '#374151' }}
+          >
+            Blog
+          </Link>
+
           {/* Auth section */}
           {!authLoading && (
             user ? (
@@ -121,7 +129,7 @@ export function Navbar() {
                 )}
               </div>
             ) : (
-              /* ── Guest auth buttons — always visible ── */
+              /* ── Guest: Blog + Login on mobile; Login + Sign Up on desktop ── */
               <div className="flex items-center gap-2">
                 <Link
                   href="/login"
@@ -132,7 +140,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-3.5 py-1 rounded-lg text-sm font-bold text-white transition-all hover:opacity-90"
+                  className="hidden lg:inline-flex px-3.5 py-1 rounded-lg text-sm font-bold text-white transition-all hover:opacity-90"
                   style={{ background: 'linear-gradient(135deg, #2596be, #1e7ea1)' }}
                 >
                   Sign Up

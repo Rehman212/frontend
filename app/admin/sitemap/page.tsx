@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { TOOLS } from '../../lib/tools';
 import { fetchPublishedPosts, type BlogPost } from '../lib/posts-api';
-import { cmsStore } from '../lib/cms-store';
+import { fetchPublishedPages } from '../lib/pages-api';
 import { IconExternal, IconSitemap } from '../components/AdminIcons';
 import { Badge, Card, PageHeader } from '../components/AdminUi';
 
@@ -19,24 +19,26 @@ type SitemapEntry = {
 
 export default function AdminSitemapPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [pages, setPages] = useState(() =>
-    cmsStore
-      .getPages()
-      .filter((p) => p.status === 'published' && p.visibility !== 'private'),
-  );
+  const [pages, setPages] = useState<Awaited<ReturnType<typeof fetchPublishedPages>>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    setPages(
-      cmsStore
-        .getPages()
-        .filter((p) => p.status === 'published' && p.visibility !== 'private'),
-    );
-    fetchPublishedPosts()
-      .then(setPosts)
-      .catch(() => setError('Could not load published blog posts.'))
+    Promise.all([
+      fetchPublishedPages().catch(() => {
+        setError('Could not load published pages.');
+        return [];
+      }),
+      fetchPublishedPosts().catch(() => {
+        setError('Could not load published blog posts.');
+        return [];
+      }),
+    ])
+      .then(([nextPages, nextPosts]) => {
+        setPages(nextPages);
+        setPosts(nextPosts);
+      })
       .finally(() => setLoading(false));
   }, []);
 

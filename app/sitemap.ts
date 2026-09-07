@@ -1,12 +1,10 @@
 import type { MetadataRoute } from 'next';
-import { readFile } from 'fs/promises';
-import path from 'path';
 import { TOOLS } from './lib/tools';
 
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://godoclab.com').replace(/\/$/, '');
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
-/** Always rebuild from live posts + cms-slugs.json (updated on page publish). */
+/** Always rebuild from live posts + CMS pages. */
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -26,13 +24,12 @@ async function fetchPublishedPosts(): Promise<PublishedPost[]> {
   }
 }
 
-/** Read slugs from disk at request time (static import stays stale after sync). */
-async function fetchCmsPageSlugs(): Promise<string[]> {
+async function fetchPublishedPageSlugs(): Promise<string[]> {
   try {
-    const raw = await readFile(path.join(process.cwd(), 'public', 'cms-slugs.json'), 'utf8');
-    const data = JSON.parse(raw) as unknown;
-    if (!Array.isArray(data)) return [];
-    return data.filter((s): s is string => typeof s === 'string' && s.trim().length > 0);
+    const res = await fetch(`${API}/pages`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const pages = (await res.json()) as { slug?: string }[];
+    return pages.map((p) => p.slug).filter((s): s is string => !!s?.trim());
   } catch {
     return [];
   }
@@ -77,7 +74,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const [posts, cmsSlugs] = await Promise.all([
     fetchPublishedPosts(),
-    fetchCmsPageSlugs(),
+    fetchPublishedPageSlugs(),
   ]);
 
   const postRoutes: MetadataRoute.Sitemap = posts.map((post) => ({

@@ -6,7 +6,15 @@ import Link from 'next/link';
 import { MetaBox } from '../../components/MetaBox';
 import { RichTextEditor } from '../../components/RichTextEditor';
 import { SeoPanel } from '../../components/SeoPanel';
-import { cmsStore } from '../../lib/cms-store';
+import { type CmsPage } from '../../lib/cms-store';
+import { useAuth } from '../../../context/AuthContext';
+import {
+  createPage,
+  fetchPage,
+  fetchPages,
+  migrateLocalPagesIfNeeded,
+  updatePage,
+} from '../../lib/pages-api';
 
 const TEMPLATES = [
   { value: 'default', label: 'Default template' },
@@ -29,7 +37,8 @@ function PageEditorForm() {
   const searchParams = useSearchParams();
   const editId = searchParams.get('id');
 
-  const [allPages, setAllPages] = useState(cmsStore.getPages());
+  const { token } = useAuth();
+  const [allPages, setAllPages] = useState<CmsPage[]>([]);
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [content, setContent] = useState('');
@@ -48,25 +57,31 @@ function PageEditorForm() {
   const [showVisibilityEdit, setShowVisibilityEdit] = useState(false);
 
   useEffect(() => {
-    const pages = cmsStore.getPages();
-    setAllPages(pages);
-    if (!editId) return;
-    const page = pages.find((p) => p.id === editId);
-    if (page) {
-      setTitle(page.title);
-      setSlug(page.slug);
-      setContent(page.content ?? '');
-      setStatus(page.status);
-      setVisibility(page.visibility ?? 'public');
-      setParentId(page.parentId ?? null);
-      setTemplate(page.template ?? 'default');
-      setOrder(page.order ?? 0);
-      setSeoTitle(page.seoTitle ?? '');
-      setSeoDescription(page.seoDescription ?? '');
-      setSeoKeywords(page.seoKeywords ?? '');
-      setSlugManual(true);
-    }
-  }, [editId]);
+    if (!token) return;
+    void (async () => {
+      try {
+        await migrateLocalPagesIfNeeded(token);
+        const pages = await fetchPages(token);
+        setAllPages(pages);
+        if (!editId) return;
+        const page = pages.find((p) => p.id === editId) ?? (await fetchPage(token, editId));
+        setTitle(page.title);
+        setSlug(page.slug);
+        setContent(page.content ?? '');
+        setStatus(page.status);
+        setVisibility(page.visibility ?? 'public');
+        setParentId(page.parentId ?? null);
+        setTemplate(page.template ?? 'default');
+        setOrder(page.order ?? 0);
+        setSeoTitle(page.seoTitle ?? '');
+        setSeoDescription(page.seoDescription ?? '');
+        setSeoKeywords(page.seoKeywords ?? '');
+        setSlugManual(true);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Failed to load page');
+      }
+    })();
+  }, [editId, token]);
 
   useEffect(() => {
     if (!slugManual && title) setSlug(slugify(title));
@@ -88,14 +103,17 @@ function PageEditorForm() {
     seoKeywords,
   });
 
-  const handleSave = (publish: boolean, stay = false) => {
+  const handleSave = async (publish: boolean, stay = false) => {
     if (!title.trim()) {
       setError('Please add a title before saving.');
       return;
     }
+    if (!token) {
+      setError('Please sign in again.');
+      return;
+    }
 
-    const pages = cmsStore.getPages();
-    const duplicate = pages.find((p) => p.slug === finalSlug && p.id !== editId);
+    const duplicate = allPages.find((p) => p.slug === finalSlug && p.id !== editId);
     if (duplicate) {
       setError('This slug is already used by another page.');
       return;
@@ -104,21 +122,20 @@ function PageEditorForm() {
     setError('');
     setSaving(true);
     const data = buildPageData(publish);
-    const now = new Date().toISOString();
 
-    if (editId) {
-      cmsStore.savePages(
-        pages.map((p) => (p.id === editId ? { ...p, ...data, updatedAt: now } : p)),
-      );
-    } else {
-      cmsStore.addPage(data);
+    try {
+      if (editId) {
+        await updatePage(token, editId, data);
+      } else {
+        await createPage(token, data);
+      }
+      if (publish) setStatus('published');
+      if (!stay) setTimeout(() => router.push('/admin/pages'), 500);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to save page');
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
-    if (publish) setStatus('published');
-
-    if (stay) return;
-    setTimeout(() => router.push('/admin/pages'), 500);
   };
 
   const handlePreview = () => {

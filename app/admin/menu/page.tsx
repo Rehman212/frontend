@@ -13,6 +13,8 @@ import {
   TextInput,
 } from '../components/AdminUi';
 import { cmsStore, type CmsPage, type MenuItem } from '../lib/cms-store';
+import { useAuth } from '../../context/AuthContext';
+import { fetchPages, migrateLocalPagesIfNeeded } from '../lib/pages-api';
 
 function withOrder(items: MenuItem[]): MenuItem[] {
   return items.map((item, index) => ({ ...item, order: index + 1 }));
@@ -143,13 +145,22 @@ export default function MenuPage() {
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [primaryMenuId, setPrimaryMenuId] = useState<string>('');
+  const { token } = useAuth();
 
   useEffect(() => {
     setItems(cmsStore.getMenu());
-    setPages(cmsStore.getPages());
     const settings = cmsStore.getMenuSettings();
     setPrimaryMenuId(settings.primaryMenuId ?? '');
-  }, []);
+    if (!token) return;
+    void (async () => {
+      try {
+        await migrateLocalPagesIfNeeded(token);
+        setPages(await fetchPages(token));
+      } catch {
+        setPages([]);
+      }
+    })();
+  }, [token]);
 
   const persist = (next: MenuItem[]) => {
     const ordered = withOrder(next);

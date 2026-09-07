@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { MAX_FEATURED_IMAGE_BYTES, uploadFeaturedImage } from '../lib/posts-api';
 
 function countWords(html: string) {
   const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -22,8 +24,14 @@ export function RichTextEditor({
   onChange,
   maxWords = 0,
 }: RichTextEditorProps) {
+  const { token } = useAuth();
   const [tab, setTab] = useState<'visual' | 'code'>('visual');
+  const [mediaOpen, setMediaOpen] = useState(false);
+  const [mediaUrl, setMediaUrl] = useState('');
+  const [mediaError, setMediaError] = useState('');
+  const [uploading, setUploading] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const syncing = useRef(false);
   const lastValid = useRef(value);
 
@@ -73,6 +81,46 @@ export function RichTextEditor({
     syncFromVisual();
   };
 
+  const insertImage = (url: string) => {
+    const html = `<img src="${url}" alt="" style="max-width:100%;height:auto;" />`;
+    if (tab === 'code') {
+      applyChange(value + `\n${html}\n`);
+    } else {
+      exec('insertHTML', html);
+    }
+    setMediaOpen(false);
+    setMediaUrl('');
+    setMediaError('');
+  };
+
+  const onPickFile = async (file: File | null) => {
+    if (!file) return;
+    setMediaError('');
+    const name = file.name.toLowerCase();
+    if (!name.endsWith('.webp') || file.type !== 'image/webp') {
+      setMediaError('Only .webp images are allowed.');
+      return;
+    }
+    if (file.size > MAX_FEATURED_IMAGE_BYTES) {
+      setMediaError('Image must be 100KB or smaller.');
+      return;
+    }
+    if (!token) {
+      setMediaError('Please sign in again to upload.');
+      return;
+    }
+    setUploading(true);
+    try {
+      const url = await uploadFeaturedImage(token, file);
+      insertImage(url);
+    } catch (e) {
+      setMediaError(e instanceof Error ? e.message : 'Upload failed');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
+
   const applyFontSize = (size: string) => {
     editorRef.current?.focus();
     const sel = window.getSelection();
@@ -107,16 +155,6 @@ export function RichTextEditor({
     syncFromVisual();
   };
 
-  const addMedia = () => {
-    const url = window.prompt('Enter image URL:');
-    if (!url) return;
-    if (tab === 'code') {
-      applyChange(value + `\n<img src="${url}" alt="" style="max-width:100%;height:auto;" />\n`);
-    } else {
-      exec('insertHTML', `<img src="${url}" alt="" style="max-width:100%;height:auto;" />`);
-    }
-  };
-
   const words = countWords(value);
   const overLimit = maxWords > 0 && words > maxWords;
   const atLimit = maxWords > 0 && words >= maxWords;
@@ -125,17 +163,72 @@ export function RichTextEditor({
     <div style={{ background: '#fff', color: '#1d2327' }}>
       {/* Toolbar row */}
       <div
-        className="flex flex-wrap items-center justify-between gap-2 px-2 py-1.5"
+        className="flex flex-wrap items-center justify-between gap-2 px-2 py-1.5 relative"
         style={{ borderBottom: '1px solid #dcdcde', background: '#f6f7f7' }}
       >
-        <button
-          type="button"
-          onClick={addMedia}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium hover:bg-white transition-colors"
-          style={{ border: '1px solid #c3c4c7', color: '#2271b1' }}
-        >
-          <span>🖼</span> Add Media
-        </button>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => { setMediaError(''); setMediaOpen((o) => !o); }}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium hover:bg-white transition-colors"
+            style={{ border: '1px solid #c3c4c7', color: '#2271b1' }}
+          >
+            <span>🖼</span> Add Media
+          </button>
+          {mediaOpen && (
+            <div
+              className="absolute left-0 top-full mt-1 z-20 w-72 rounded-lg p-3 shadow-lg"
+              style={{ background: '#fff', border: '1px solid #dcdcde' }}
+            >
+              <p className="text-[11px] font-semibold text-gray-700 mb-2">Insert image</p>
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".webp,image/webp"
+                className="hidden"
+                onChange={(e) => void onPickFile(e.target.files?.[0] ?? null)}
+              />
+              <button
+                type="button"
+                disabled={uploading}
+                onClick={() => fileRef.current?.click()}
+                className="w-full text-xs font-medium px-3 py-2 rounded mb-2"
+                style={{ background: '#2271b1', color: '#fff' }}
+              >
+                {uploading ? 'Uploading…' : 'Upload from computer'}
+              </button>
+              <p className="text-[10px] text-gray-500 mb-2">.webp only, max 100KB</p>
+              <p className="text-[10px] text-gray-400 mb-1">or paste image URL</p>
+              <div className="flex gap-1">
+                <input
+                  value={mediaUrl}
+                  onChange={(e) => setMediaUrl(e.target.value)}
+                  placeholder="https://..."
+                  className="flex-1 px-2 py-1.5 rounded text-xs outline-none"
+                  style={{ border: '1px solid #c3c4c7' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const url = mediaUrl.trim();
+                    if (!url) {
+                      setMediaError('Enter an image URL or upload a file.');
+                      return;
+                    }
+                    insertImage(url);
+                  }}
+                  className="px-2 py-1.5 rounded text-xs font-medium"
+                  style={{ border: '1px solid #c3c4c7' }}
+                >
+                  Insert
+                </button>
+              </div>
+              {mediaError && (
+                <p className="text-[11px] text-red-600 mt-2">{mediaError}</p>
+              )}
+            </div>
+          )}
+        </div>
         <div className="flex rounded overflow-hidden" style={{ border: '1px solid #c3c4c7' }}>
           <button
             type="button"

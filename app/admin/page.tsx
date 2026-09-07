@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
 import { cmsStore } from './lib/cms-store';
 import { fetchPosts, type BlogPost } from './lib/posts-api';
+import { fetchPages, migrateLocalPagesIfNeeded } from './lib/pages-api';
 import {
   APEX,
   Sparkline,
@@ -90,20 +91,28 @@ export default function AdminOverview() {
   }, [token]);
 
   useEffect(() => {
-    const pages = cmsStore.getPages();
-    const menu = cmsStore.getMenu();
-    setCmsCounts((prev) => ({
-      ...prev,
-      pages: pages.length,
-      published: pages.filter((p) => p.status === 'published').length,
-    }));
-    setRecentPages([...pages].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5));
-    setMenuItems([...menu].sort((a, b) => a.order - b.order));
-    setDraftPages(pages.filter((p) => p.status === 'draft'));
-    setSeoIssues(
-      pages.filter((p) => p.status === 'published' && (!p.seoTitle.trim() || !p.seoDescription.trim())),
-    );
-  }, []);
+    if (!token) return;
+    void (async () => {
+      try {
+        await migrateLocalPagesIfNeeded(token);
+        const pages = await fetchPages(token);
+        const menu = cmsStore.getMenu();
+        setCmsCounts((prev) => ({
+          ...prev,
+          pages: pages.length,
+          published: pages.filter((p) => p.status === 'published').length,
+        }));
+        setRecentPages([...pages].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, 5));
+        setMenuItems([...menu].sort((a, b) => a.order - b.order));
+        setDraftPages(pages.filter((p) => p.status === 'draft'));
+        setSeoIssues(
+          pages.filter((p) => p.status === 'published' && (!p.seoTitle.trim() || !p.seoDescription.trim())),
+        );
+      } catch {
+        /* keep zeros */
+      }
+    })();
+  }, [token]);
 
   useEffect(() => {
     if (!token) return;

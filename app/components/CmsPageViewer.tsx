@@ -4,7 +4,8 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { SiteShell } from './SiteShell';
-import { cmsStore, type CmsPage } from '../admin/lib/cms-store';
+import { type CmsPage } from '../admin/lib/cms-store';
+import { fetchPublishedPageBySlug } from '../admin/lib/pages-api';
 
 function LoadingState() {
   return (
@@ -23,18 +24,50 @@ export function CmsPageViewer({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const found = cmsStore.getPages().find((p) => p.slug === slug);
-    setPage(found ?? null);
-    setLoading(false);
+    let cancelled = false;
+    setLoading(true);
 
-    if (found) {
-      document.title = found.seoTitle?.trim() || found.title;
-      const meta = document.querySelector('meta[name="description"]');
-      if (meta && found.seoDescription) {
-        meta.setAttribute('content', found.seoDescription);
+    void (async () => {
+      try {
+        let found = await fetchPublishedPageBySlug(slug);
+        if (!found && isPreview) {
+          try {
+            const raw = localStorage.getItem('auth');
+            const token = raw ? (JSON.parse(raw) as { token?: string }).token : '';
+            if (token) {
+              const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api'}/admin/pages`,
+                { headers: { Authorization: `Bearer ${token}` } },
+              );
+              if (res.ok) {
+                const all = (await res.json()) as CmsPage[];
+                found = all.find((p) => p.slug === slug) ?? null;
+              }
+            }
+          } catch {
+            found = null;
+          }
+        }
+        if (cancelled) return;
+        setPage(found);
+        if (found) {
+          document.title = found.seoTitle?.trim() || found.title;
+          const meta = document.querySelector('meta[name="description"]');
+          if (meta && found.seoDescription) {
+            meta.setAttribute('content', found.seoDescription);
+          }
+        }
+      } catch {
+        if (!cancelled) setPage(null);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    }
-  }, [slug]);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, isPreview]);
 
   if (loading) return <LoadingState />;
 
