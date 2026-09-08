@@ -11,6 +11,7 @@ import {
   SecondaryButton,
   TextInput,
 } from '../components/AdminUi';
+import { fetchSiteSettings, updateSiteSettings } from '../lib/posts-api';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
@@ -52,6 +53,11 @@ export default function SettingsPage() {
   const [brandMsg, setBrandMsg] = useState('');
   const [brandErr, setBrandErr] = useState('');
 
+  const [blogPostsPerPage, setBlogPostsPerPage] = useState('9');
+  const [savingBlog, setSavingBlog] = useState(false);
+  const [blogMsg, setBlogMsg] = useState('');
+  const [blogErr, setBlogErr] = useState('');
+
   useEffect(() => {
     if (!user) return;
     setUsername(user.username);
@@ -62,6 +68,12 @@ export default function SettingsPage() {
     setHeaderLogo(branding.headerLogo);
     setFooterLogo(branding.footerLogo);
   }, [branding]);
+
+  useEffect(() => {
+    fetchSiteSettings()
+      .then((s) => setBlogPostsPerPage(String(s.blogPostsPerPage)))
+      .catch(() => undefined);
+  }, []);
 
   if (!user || !token) return null;
 
@@ -155,11 +167,31 @@ export default function SettingsPage() {
     }
   };
 
+  const handleSaveBlog = async () => {
+    setBlogErr('');
+    setBlogMsg('');
+    const n = Number(blogPostsPerPage);
+    if (!Number.isFinite(n) || n < 3 || n > 48) {
+      setBlogErr('Posts per page must be between 3 and 48.');
+      return;
+    }
+    setSavingBlog(true);
+    try {
+      const saved = await updateSiteSettings(token, { blogPostsPerPage: Math.round(n) });
+      setBlogPostsPerPage(String(saved.blogPostsPerPage));
+      setBlogMsg('Blog listing updated.');
+    } catch (e) {
+      setBlogErr(e instanceof Error ? e.message : 'Failed to save blog settings');
+    } finally {
+      setSavingBlog(false);
+    }
+  };
+
   return (
     <div>
       <PageHeader
         title="Settings"
-        description="Update your account details, password, and site logos."
+        description="Update your account, logos, and how the public blog listing is shown."
       />
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 max-w-5xl">
@@ -314,6 +346,37 @@ export default function SettingsPage() {
             >
               Reset defaults
             </SecondaryButton>
+          </div>
+        </Card>
+
+        <Card>
+          <h2 className="text-sm font-bold text-gray-900 mb-1">Blog listing</h2>
+          <p className="text-xs text-gray-500 mb-5">
+            How many published posts to show per page on /blog (phone, tablet, and desktop).
+          </p>
+          <div>
+            <FieldLabel>Posts per page</FieldLabel>
+            <TextInput
+              value={blogPostsPerPage}
+              onChange={setBlogPostsPerPage}
+              placeholder="9"
+            />
+            <p className="text-[11px] text-gray-400 mt-1.5">Allowed range: 3–48. Default is 9.</p>
+          </div>
+          {blogErr && (
+            <p className="mt-4 text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+              {blogErr}
+            </p>
+          )}
+          {blogMsg && (
+            <p className="mt-4 text-xs text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2">
+              {blogMsg}
+            </p>
+          )}
+          <div className="mt-5">
+            <PrimaryButton onClick={handleSaveBlog} disabled={savingBlog}>
+              {savingBlog ? 'Saving…' : 'Save Blog Settings'}
+            </PrimaryButton>
           </div>
         </Card>
       </div>

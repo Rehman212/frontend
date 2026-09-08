@@ -1,9 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { SiteShell } from '../components/SiteShell';
-import { fetchPublishedPosts, type BlogPost } from '../admin/lib/posts-api';
+import {
+  fetchPublishedPosts,
+  fetchSiteSettings,
+  type BlogPost,
+} from '../admin/lib/posts-api';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -11,6 +16,91 @@ function formatDate(iso: string) {
     day: 'numeric',
     year: 'numeric',
   });
+}
+
+function pageWindow(current: number, total: number) {
+  const pages: number[] = [];
+  const start = Math.max(1, current - 2);
+  const end = Math.min(total, current + 2);
+  for (let p = start; p <= end; p++) pages.push(p);
+  return pages;
+}
+
+function Pagination({
+  page,
+  totalPages,
+  onPage,
+}: {
+  page: number;
+  totalPages: number;
+  onPage: (page: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+  const pages = pageWindow(page, totalPages);
+
+  return (
+    <nav
+      className="mt-10 flex flex-wrap items-center justify-center gap-2"
+      aria-label="Blog pagination"
+    >
+      <button
+        type="button"
+        disabled={page <= 1}
+        onClick={() => onPage(page - 1)}
+        className="min-h-10 px-3.5 rounded-lg text-sm font-semibold border border-gray-200 bg-white text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed hover:border-[#2596be] hover:text-[#2596be]"
+      >
+        Previous
+      </button>
+      {pages[0] > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={() => onPage(1)}
+            className="min-h-10 min-w-10 px-3 rounded-lg text-sm font-semibold border border-gray-200 bg-white text-gray-700"
+          >
+            1
+          </button>
+          {pages[0] > 2 && <span className="px-1 text-gray-400">…</span>}
+        </>
+      )}
+      {pages.map((p) => (
+        <button
+          key={p}
+          type="button"
+          onClick={() => onPage(p)}
+          className={`min-h-10 min-w-10 px-3 rounded-lg text-sm font-semibold ${
+            p === page
+              ? 'text-white'
+              : 'border border-gray-200 bg-white text-gray-700 hover:border-[#2596be] hover:text-[#2596be]'
+          }`}
+          style={p === page ? { background: '#2596be' } : undefined}
+          aria-current={p === page ? 'page' : undefined}
+        >
+          {p}
+        </button>
+      ))}
+      {pages[pages.length - 1] < totalPages && (
+        <>
+          {pages[pages.length - 1] < totalPages - 1 && <span className="px-1 text-gray-400">…</span>}
+          <button
+            type="button"
+            onClick={() => onPage(totalPages)}
+            className="min-h-10 min-w-10 px-3 rounded-lg text-sm font-semibold border border-gray-200 bg-white text-gray-700"
+          >
+            {totalPages}
+          </button>
+        </>
+      )}
+      <button
+        type="button"
+        disabled={page >= totalPages}
+        onClick={() => onPage(page + 1)}
+        className="min-h-10 px-3.5 rounded-lg text-sm font-semibold border border-gray-200 bg-white text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed hover:border-[#2596be] hover:text-[#2596be]"
+      >
+        Next
+      </button>
+    </nav>
+  );
 }
 
 function BlogCard({ post }: { post: BlogPost }) {
@@ -83,16 +173,46 @@ function BlogCardSkeleton() {
 }
 
 export default function BlogListingPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center text-sm text-gray-500">Loading blog…</div>}>
+      <BlogListing />
+    </Suspense>
+  );
+}
+
+function BlogListing() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pageParam = Math.max(1, parseInt(searchParams.get('page') || '1', 10) || 1);
+
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [perPage, setPerPage] = useState(9);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchPublishedPosts()
-      .then(setPosts)
+    Promise.all([fetchPublishedPosts(), fetchSiteSettings()])
+      .then(([list, settings]) => {
+        setPosts(list);
+        setPerPage(settings.blogPostsPerPage);
+      })
       .catch(() => setError('Could not load blog posts.'))
       .finally(() => setLoading(false));
   }, []);
+
+  const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
+  const page = Math.min(pageParam, totalPages);
+  const pagePosts = useMemo(() => {
+    const start = (page - 1) * perPage;
+    return posts.slice(start, start + perPage);
+  }, [posts, page, perPage]);
+
+  const goToPage = (next: number) => {
+    const safe = Math.min(totalPages, Math.max(1, next));
+    const href = safe <= 1 ? '/blog' : `/blog?page=${safe}`;
+    router.push(href);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <SiteShell>
@@ -158,11 +278,14 @@ export default function BlogListingPage() {
         )}
 
         {!loading && !error && posts.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <BlogCard key={post.id} post={post} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pagePosts.map((post) => (
+                <BlogCard key={post.id} post={post} />
+              ))}
+            </div>
+            <Pagination page={page} totalPages={totalPages} onPage={goToPage} />
+          </>
         )}
       </main>
     </SiteShell>

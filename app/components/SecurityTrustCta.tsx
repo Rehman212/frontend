@@ -84,7 +84,7 @@ export function SecurityTrustCta() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
-                href="/tool/merge"
+                href="/tool/merge/pdf"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-[#0f172a] bg-white hover:bg-slate-100 transition-all hover:-translate-y-0.5 shadow-lg shadow-black/20"
               >
                 Try Securely — Free

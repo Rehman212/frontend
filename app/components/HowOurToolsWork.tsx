@@ -116,7 +116,7 @@ export function HowOurToolsWork() {
               </svg>
             </Link>
             <Link
-              href="/tool/merge"
+                href="/tool/merge/pdf"
               className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl text-sm font-bold text-[#2596be] bg-[#2596be]/10 border border-[#2596be]/20 hover:bg-[#2596be]/15 transition-all"
             >
               Try Merge PDF

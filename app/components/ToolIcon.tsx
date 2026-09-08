@@ -451,8 +451,10 @@ function HtmlIcon({ fwd = true }: { fwd?: boolean }) {
 export function ToolIcon({ slug }: { slug: string }) {
   switch (slug) {
     // ── Organize ──────────────────────────────────────────────────────────────
-    case 'merge':          return <MergeIcon />;
-    case 'split':          return <SplitIcon />;
+    case 'merge':
+    case 'merge/pdf':     return <MergeIcon />;
+    case 'split':
+    case 'split-pdf':      return <SplitIcon />;
     case 'selective-merge':
     case 'reorder-pages':
     case 'organize-pdf':   return <OrganizeIcon />;
@@ -573,7 +575,7 @@ export function ToolIcon({ slug }: { slug: string }) {
 
 // ── Category → representative tool slug ──────────────────────────────────────
 const CAT_SLUG: Record<string, string> = {
-  'organize':    'merge',
+  'organize':    'merge/pdf',
   'optimize':    'compress',
   'to-pdf':      'word-to-pdf',
   'from-pdf':    'pdf-to-word',

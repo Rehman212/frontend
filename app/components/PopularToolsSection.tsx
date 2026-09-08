@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { TOOLS, CATEGORIES, type Tool } from '../lib/tools';
 
 const POPULAR_SLUGS = [
-  'merge',
+  'merge/pdf',
   'compress',
   'ocr',
   'remove-background',
   'pdf-to-image',
-  'split',
+  'split-pdf',
   'word-to-pdf',
   'watermark',
   'jpg-to-png',

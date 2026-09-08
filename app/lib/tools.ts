@@ -55,7 +55,7 @@ export const CATEGORIES = [
 export const TOOLS: Tool[] = [
   // ─── Merge, Split & Organize ───────────────────────────────────────────────
   {
-    slug: 'merge',
+    slug: 'merge/pdf',
     name: 'Merge PDF',
     description: 'Combine multiple PDF files into one single document',
     icon: '🔀',
@@ -73,7 +73,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free merge tool to combine multiple PDFs into one file instantly. Fast, easy, and 100% online — no installation needed. Try GoDocLab now!',
   },
   {
-    slug: 'split',
+    slug: 'split-pdf',
     name: 'Split PDF',
     description: 'Split a PDF into separate pages or page ranges',
     icon: '✂️',

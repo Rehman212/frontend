@@ -2,6 +2,11 @@ const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
 export const MAX_FEATURED_IMAGE_BYTES = 100 * 1024; // 100KB
 
+export interface BlogFaq {
+  question: string;
+  answer: string;
+}
+
 export interface BlogPost {
   id: string;
   title: string;
@@ -14,6 +19,7 @@ export interface BlogPost {
   seoDescription: string;
   seoKeywords: string;
   featuredImage: string;
+  faqs?: BlogFaq[];
   createdAt: string;
   updatedAt: string;
 }
@@ -28,6 +34,7 @@ export type PostPayload = {
   seoDescription?: string;
   seoKeywords?: string;
   featuredImage?: string;
+  faqs?: BlogFaq[];
 };
 
 function authHeaders(token: string) {
@@ -128,5 +135,31 @@ export async function fetchPublishedPostBySlug(slug: string): Promise<BlogPost |
   const res = await fetch(`${API}/posts/${encodeURIComponent(slug)}`, { cache: 'no-store' });
   if (res.status === 404) return null;
   if (!res.ok) throw new Error('Failed to load post');
+  return res.json();
+}
+
+export async function fetchSiteSettings(): Promise<{ blogPostsPerPage: number }> {
+  try {
+    const res = await fetch(`${API}/site-settings`, { cache: 'no-store' });
+    if (!res.ok) return { blogPostsPerPage: 9 };
+    const data = (await res.json()) as { blogPostsPerPage?: number };
+    const n = Number(data.blogPostsPerPage);
+    if (!Number.isFinite(n)) return { blogPostsPerPage: 9 };
+    return { blogPostsPerPage: Math.min(48, Math.max(3, Math.round(n))) };
+  } catch {
+    return { blogPostsPerPage: 9 };
+  }
+}
+
+export async function updateSiteSettings(
+  token: string,
+  payload: { blogPostsPerPage: number },
+): Promise<{ blogPostsPerPage: number }> {
+  const res = await fetch(`${API}/admin/site-settings`, {
+    method: 'PATCH',
+    headers: authHeaders(token),
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(await parseError(res, 'Failed to save site settings'));
   return res.json();
 }

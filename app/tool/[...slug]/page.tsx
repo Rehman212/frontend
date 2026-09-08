@@ -2,14 +2,19 @@ import type { Metadata } from 'next';
 import { TOOLS } from '../../lib/tools';
 import ToolClient from './ToolClient';
 
+function slugFromParams(slug: string | string[]) {
+  return Array.isArray(slug) ? slug.join('/') : slug;
+}
+
 export function generateStaticParams() {
-  return TOOLS.map((tool) => ({ slug: tool.slug }));
+  return TOOLS.map((tool) => ({ slug: tool.slug.split('/') }));
 }
 
 export async function generateMetadata(
-  { params }: { params: Promise<{ slug: string }> },
+  { params }: { params: Promise<{ slug: string[] }> },
 ): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: parts } = await params;
+  const slug = slugFromParams(parts);
   const tool = TOOLS.find((t) => t.slug === slug);
   if (!tool) return { title: 'Tool Not Found | GoDocLab' };
 
@@ -37,8 +42,9 @@ export async function generateMetadata(
   };
 }
 
-export default async function ToolPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function ToolPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug: parts } = await params;
+  const slug = slugFromParams(parts);
   const tool = TOOLS.find((t) => t.slug === slug);
 
   const schema = tool

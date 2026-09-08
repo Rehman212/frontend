@@ -9,7 +9,7 @@ const pdfCategories = CATEGORIES.filter((c) => !c.id.startsWith('img-'));
 const imageCategories = CATEGORIES.filter((c) => c.id.startsWith('img-'));
 
 const POPULAR_TOOLS = [
-  { label: 'Merge PDF', href: '/tool/merge' },
+  { label: 'Merge PDF', href: '/tool/merge/pdf' },
   { label: 'Compress PDF', href: '/tool/compress' },
   { label: 'PDF to Image', href: '/tool/pdf-to-image' },
   { label: 'Remove Background', href: '/tool/remove-background' },
@@ -17,8 +17,8 @@ const POPULAR_TOOLS = [
 ];
 
 const QUICK_LINKS = [
-  { label: 'All PDF Tools', href: '/#pdf-section' },
-  { label: 'All Image Tools', href: '/#img-section' },
+  { label: 'All PDF Tools', href: '/tool' },
+  { label: 'All Image Tools', href: '/tool#img-section' },
   { label: 'Blog', href: '/blog' },
   { label: 'Sitemap', href: '/sitemap.xml' },
   { label: 'Login', href: '/login' },
@@ -66,7 +66,7 @@ export function SiteFooter() {
 
   return (
     <footer
-      className="mt-12 border-t border-[#1e293b]"
+      className="mt-auto w-full shrink-0 relative z-10 border-t border-[#1e293b] pb-[env(safe-area-inset-bottom)]"
       style={{ background: 'linear-gradient(180deg, #0f172a 0%, #111827 100%)' }}
     >
       <div className="h-0.5 bg-gradient-to-r from-[#2596be] via-[#1e7ea1] to-[#2596be]/40" />

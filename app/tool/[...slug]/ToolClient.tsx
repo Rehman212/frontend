@@ -290,7 +290,7 @@ export default function ToolClient({ slug }: { slug: string }) {
 
       if (user) {
         const originalFileName = files[0]?.name ?? '';
-        const outputFileName   = `${tool.slug}.${tool.outputFormat}`;
+        const outputFileName   = `${tool.slug.replace(/\//g, '-')}.${tool.outputFormat}`;
         saveConversion(blob, tool.slug, outputFileName, originalFileName);
         setSaved(true);
       }

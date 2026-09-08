@@ -8,7 +8,6 @@ import { BlogSection } from './components/BlogSection';
 import { HowOurToolsWork } from './components/HowOurToolsWork';
 import { SecurityTrustCta } from './components/SecurityTrustCta';
 import { ToolsCatalog } from './components/ToolsCatalog';
-import { SiteFooter } from './components/SiteFooter';
 
 export default function Home() {
   return (
@@ -36,7 +35,6 @@ export default function Home() {
 
       <FaqSection />
 
-      <SiteFooter />
     </SiteShell>
   );
 }

@@ -21,6 +21,7 @@ import {
   updatePost,
   uploadFeaturedImage,
   MAX_FEATURED_IMAGE_BYTES,
+  type BlogFaq,
 } from '../../lib/posts-api';
 
 const MAX_POST_WORDS = 5000;
@@ -48,6 +49,7 @@ function BlogPostForm() {
   const [seoDescription, setSeoDescription] = useState('');
   const [seoKeywords, setSeoKeywords] = useState('');
   const [featuredImage, setFeaturedImage] = useState('');
+  const [faqs, setFaqs] = useState<BlogFaq[]>([{ question: '', answer: '' }]);
   const [status, setStatus] = useState<'draft' | 'published'>('draft');
   const [slugManual, setSlugManual] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -69,6 +71,11 @@ function BlogPostForm() {
         setSeoDescription(post.seoDescription ?? '');
         setSeoKeywords(post.seoKeywords ?? '');
         setFeaturedImage(post.featuredImage ?? '');
+        setFaqs(
+          post.faqs?.length
+            ? post.faqs.map((faq) => ({ question: faq.question, answer: faq.answer }))
+            : [{ question: '', answer: '' }],
+        );
         setStatus(post.status);
         setSlugManual(true);
       })
@@ -127,6 +134,9 @@ function BlogPostForm() {
       seoDescription,
       seoKeywords,
       featuredImage,
+      faqs: faqs
+        .map((faq) => ({ question: faq.question.trim(), answer: faq.answer.trim() }))
+        .filter((faq) => faq.question && faq.answer),
       status: finalStatus as 'draft' | 'published',
     };
 
@@ -206,6 +216,65 @@ function BlogPostForm() {
             </div>
             <div className="mx-5 mb-5 rounded-sm overflow-hidden" style={{ border: '1px solid #c3c4c7' }}>
               <RichTextEditor value={content} onChange={setContent} maxWords={MAX_POST_WORDS} />
+            </div>
+          </Card>
+
+          <Card>
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">FAQs</h3>
+                <p className="text-[11px] text-gray-500 mt-1 leading-relaxed">
+                  These questions appear only on this published blog post.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFaqs((prev) => [...prev, { question: '', answer: '' }])}
+                className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg text-[#1e7ea1] bg-[#2596be]/10 hover:bg-[#2596be]/20"
+              >
+                + Add FAQ
+              </button>
+            </div>
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <div key={index} className="rounded-lg border border-gray-200 p-4 space-y-3 bg-gray-50/60">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+                      FAQ {index + 1}
+                    </p>
+                    {faqs.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => setFaqs((prev) => prev.filter((_, i) => i !== index))}
+                        className="text-[11px] font-semibold text-red-600 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  <div>
+                    <FieldLabel>Question</FieldLabel>
+                    <TextInput
+                      value={faq.question}
+                      onChange={(v) =>
+                        setFaqs((prev) => prev.map((item, i) => (i === index ? { ...item, question: v } : item)))
+                      }
+                      placeholder="e.g. How do I compress a CAD drawing?"
+                    />
+                  </div>
+                  <div>
+                    <FieldLabel>Answer</FieldLabel>
+                    <TextArea
+                      value={faq.answer}
+                      onChange={(v) =>
+                        setFaqs((prev) => prev.map((item, i) => (i === index ? { ...item, answer: v } : item)))
+                      }
+                      placeholder="Write a clear answer for this post..."
+                      rows={3}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </Card>
 
@@ -309,6 +378,7 @@ function BlogPostForm() {
               <li>• Keep excerpt under 160 characters</li>
               <li>• Featured image: .webp only, max 100KB</li>
               <li>• Content limit: max {MAX_POST_WORDS.toLocaleString()} words</li>
+              <li>• Add FAQs below the article — they show only on this post</li>
               <li>• Save as draft to preview before publishing</li>
             </ul>
           </Card>

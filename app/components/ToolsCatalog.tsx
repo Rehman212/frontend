@@ -23,8 +23,8 @@ const TAB_LABELS: Record<string, string> = {
 };
 
 const POPULAR_SLUGS = new Set([
-  'merge',
-  'split',
+  'merge/pdf',
+  'split-pdf',
   'compress',
   'ocr',
   'watermark',
