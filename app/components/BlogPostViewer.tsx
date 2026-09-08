@@ -121,6 +121,8 @@ export function BlogPostViewer({ slug }: { slug: string }) {
     );
   }
 
+  const faqs = post.faqs ?? [];
+
   return (
     <SiteShell>
       <article className="max-w-4xl mx-auto px-4 py-10 sm:py-14">
@@ -152,15 +154,15 @@ export function BlogPostViewer({ slug }: { slug: string }) {
           className="prose-page text-gray-700 text-[15px] leading-relaxed"
           dangerouslySetInnerHTML={{ __html: post.content || '<p>No content yet.</p>' }}
         />
-        {post.faqs?.length > 0 && <BlogFaqList faqs={post.faqs} />}
-        {post.faqs?.length > 0 && (
+        {faqs.length > 0 && <BlogFaqList faqs={faqs} />}
+        {faqs.length > 0 && (
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{
               __html: JSON.stringify({
                 '@context': 'https://schema.org',
                 '@type': 'FAQPage',
-                mainEntity: post.faqs.map((faq) => ({
+                mainEntity: faqs.map((faq) => ({
                   '@type': 'Question',
                   name: faq.question,
                   acceptedAnswer: { '@type': 'Answer', text: faq.answer },
