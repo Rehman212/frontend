@@ -3,7 +3,8 @@ import "./globals.css";
 import { Providers } from "./components/Providers";
 
 export const metadata: Metadata = {
-  title: "GoDocLab — Every PDF Tool You Need",
+  metadataBase: new URL('https://godoclab.com'),
+  title: 'GoDocLab — Every PDF Tool You Need',
   description: "Merge, split, compress, convert, rotate, watermark, protect PDFs and more. All tools in one place at GoDocLab.com.",
   icons: {
     icon: [
