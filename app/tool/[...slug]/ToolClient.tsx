@@ -250,6 +250,20 @@ export default function ToolClient({ slug }: { slug: string }) {
       return;
     }
 
+    const missingRequired = (tool.params ?? []).find(
+      (p) => p.required && !String(params[p.name] ?? '').trim(),
+    );
+    if (missingRequired) {
+      Swal.fire({
+        icon: 'warning',
+        title: `${missingRequired.label} required`,
+        text: 'This PDF is locked. Enter the password used to open it, then process again.',
+        confirmButtonText: 'Got it',
+        confirmButtonColor: '#2596be',
+      });
+      return;
+    }
+
     setLoading(true);
     setError('');
     setDownloadUrl('');
@@ -645,6 +659,7 @@ export default function ToolClient({ slug }: { slug: string }) {
                 <div key={param.name}>
                   <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">
                     {param.label}
+                    {param.required ? <span className="text-red-500"> *</span> : null}
                   </label>
                   {param.type === 'select' ? (
                     <select

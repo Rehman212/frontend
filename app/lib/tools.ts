@@ -5,6 +5,7 @@ export interface ToolParam {
   options?: { value: string; label: string }[];
   defaultValue?: string | number;
   placeholder?: string;
+  required?: boolean;
 }
 
 export interface Tool {
@@ -1272,7 +1273,16 @@ export const TOOLS: Tool[] = [
     acceptedFormats: '.pdf',
     outputFormat: 'unlocked.pdf',
     outputMime: 'application/pdf',
-    params: [],
+    params: [
+      {
+        name: 'password',
+        label: 'PDF password',
+        type: 'password',
+        placeholder: 'Password used to open this PDF',
+        defaultValue: '',
+        required: true,
+      },
+    ],
     seoTitle: 'Free PDF Unlock Tool | Remove PDF Password Online',
     seoDescription: 'Use our free PDF unlock tool to remove password from PDF instantly online. Fast, easy, and 100% free—no installation needed. Try GoDocLab now!',
   },
