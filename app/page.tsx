@@ -19,7 +19,7 @@ export default function Home() {
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <main className="flex-1 min-w-0">
-          <ToolsCatalog />
+          <ToolsCatalog mode="home" />
         </main>
       </div>
 

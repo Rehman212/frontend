@@ -406,7 +406,7 @@ export default function ToolClient({ slug }: { slug: string }) {
           <nav className="text-xs text-slate-400 mb-8 flex flex-wrap items-center gap-1.5">
             <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <span className="text-slate-600">/</span>
-            <Link href="/tool" className="hover:text-white transition-colors">Tools</Link>
+            <Link href="/tools" className="hover:text-white transition-colors">Tools</Link>
             <span className="text-slate-600">/</span>
             <span className="text-slate-200 truncate">{tool.name}</span>
           </nav>
@@ -861,7 +861,7 @@ export default function ToolClient({ slug }: { slug: string }) {
 
       <div className="bg-white py-10 text-center border-t border-slate-100">
         <Link
-          href="/tool"
+          href="/tools"
           className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-[#2596be] transition-colors"
         >
           ← All tools

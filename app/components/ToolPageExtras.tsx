@@ -143,7 +143,7 @@ export function ToolPageExtras({ tool }: { tool: Tool }) {
                 </h2>
               </div>
               <Link
-                href="/tool"
+                href="/tools"
                 className="text-sm font-bold underline underline-offset-4 decoration-slate-300 hover:decoration-[#2596be] hover:text-[#2596be]"
               >
                 All tools

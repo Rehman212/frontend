@@ -69,7 +69,7 @@ function write<T>(key: string, data: T) {
 
 const DEFAULT_MENU: MenuItem[] = [
   { id: '1', label: 'Home', url: '/', order: 1, visible: true },
-  { id: '2', label: 'Tools', url: '/#tools', order: 2, visible: true },
+  { id: '2', label: 'Tools', url: '/tools', order: 2, visible: true },
   { id: '3', label: 'Blog', url: '/blog', order: 3, visible: true },
 ];
 
@@ -81,7 +81,7 @@ const DEFAULT_PAGES: CmsPage[] = [
 
 /** Routes that must NOT be handled as CMS pages */
 export const CMS_RESERVED_SLUGS = new Set([
-  'admin', 'login', 'signup', 'dashboard', 'auth', 'tool', 'p', 'api', 'blog',
+  'admin', 'login', 'signup', 'dashboard', 'auth', 'tool', 'tools', 'p', 'api', 'blog',
   'favicon.ico', 'icon.png', 'logo.webp', 'robots.txt', 'sitemap.xml',
 ]);
 
@@ -152,7 +152,21 @@ export async function revalidateSitemap(): Promise<void> {
 
 export const cmsStore = {
   getMenu(): MenuItem[] {
-    return read(KEYS.menu, DEFAULT_MENU);
+    const items = read(KEYS.menu, DEFAULT_MENU);
+    // Migrate old homepage anchor → dedicated /tools page
+    let changed = false;
+    const next = items.map((item) => {
+      if (
+        item.label.toLowerCase() === 'tools' &&
+        (item.url === '/#tools' || item.url === '#tools' || item.url === '/tool')
+      ) {
+        changed = true;
+        return { ...item, url: '/tools' };
+      }
+      return item;
+    });
+    if (changed) write(KEYS.menu, next);
+    return next;
   },
   saveMenu(items: MenuItem[]) {
     write(KEYS.menu, items);

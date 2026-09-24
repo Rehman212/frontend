@@ -70,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${site}/`, lastModified: now, changeFrequency: 'daily', priority: 1 },
     { url: `${site}/blog`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
-    { url: `${site}/tool`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${site}/tools`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
   ];
 
   const toolRoutes: MetadataRoute.Sitemap = TOOLS.map((tool) => ({

@@ -104,7 +104,7 @@ export function BlogPostSidebar({
           ))}
         </ul>
         <Link
-          href="/#tools"
+          href="/tools"
           className="mt-3 inline-flex text-xs font-bold text-[#2596be] hover:underline"
         >
           Browse all tools →
