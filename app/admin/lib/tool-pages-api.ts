@@ -1,6 +1,6 @@
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
-import type { ToolFaq, ToolFeature, ToolPageData } from '../lib/tool-page-html';
+import type { ToolFaq, ToolFeature, ToolPageData } from '../../lib/tool-page-html';
 
 export type { ToolPageData, ToolFaq, ToolFeature };
 
