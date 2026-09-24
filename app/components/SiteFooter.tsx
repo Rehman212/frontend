@@ -9,7 +9,7 @@ const pdfCategories = CATEGORIES.filter((c) => !c.id.startsWith('img-'));
 const imageCategories = CATEGORIES.filter((c) => c.id.startsWith('img-'));
 
 const POPULAR_TOOLS = [
-  { label: 'Merge PDF', href: '/tool/merge/pdf' },
+  { label: 'Merge PDF', href: '/tool/merge-pdf' },
   { label: 'Compress PDF', href: '/tool/compress' },
   { label: 'PDF to Image', href: '/tool/pdf-to-image' },
   { label: 'Remove Background', href: '/tool/remove-background' },
@@ -23,6 +23,16 @@ const QUICK_LINKS = [
   { label: 'Sitemap', href: '/sitemap.xml' },
   { label: 'Login', href: '/login' },
   { label: 'Sign Up', href: '/signup' },
+];
+
+/** Published CMS pages — linked in footer so crawlers can discover them */
+const COMPANY_LINKS = [
+  { label: 'About Us', href: '/about-us' },
+  { label: 'Contact Us', href: '/contact-us' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
+  { label: 'Terms and Conditions', href: '/terms-and-conditions' },
+  { label: 'Cookie Policy', href: '/cookie-policy' },
+  { label: 'Copyright and DMCA', href: '/copyright-dmca' },
 ];
 
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -52,9 +62,9 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 function FooterColumn({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="min-w-0">
-      <h4 className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-white mb-4 pb-2 border-b border-[#1e293b]">
+      <p className="text-[11px] font-extrabold uppercase tracking-[0.14em] text-white mb-4 pb-2 border-b border-[#1e293b]">
         {title}
-      </h4>
+      </p>
       <ul className="space-y-2.5">{children}</ul>
     </div>
   );
@@ -102,7 +112,7 @@ export function SiteFooter() {
           </div>
 
           {/* Link columns */}
-          <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 lg:gap-8 w-full">
+          <div className="flex-1 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-8 md:gap-6 lg:gap-8 w-full">
             <FooterColumn title="PDF Tools">
               {pdfCategories.map((cat) => (
                 <li key={cat.id}>
@@ -134,27 +144,50 @@ export function SiteFooter() {
                 </li>
               ))}
             </FooterColumn>
+
+            <FooterColumn title="Company">
+              {COMPANY_LINKS.map((link) => (
+                <li key={link.href}>
+                  <FooterLink href={link.href}>{link.label}</FooterLink>
+                </li>
+              ))}
+            </FooterColumn>
           </div>
         </div>
       </div>
 
-      {/* Bottom bar */}
+      {/* Bottom bar + legal links for crawlers */}
       <div className="border-t border-[#1e293b] bg-[#0b1120]/60">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-slate-500">
-            © {year} Digital Hub · No sign-up required
-          </p>
-          <p className="text-xs text-slate-500">
-            Powered by{' '}
-            <a
-              href="https://aurexone.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-[#2596be] hover:text-[#7dd3fc] transition-colors"
-            >
-              aurexone.com
-            </a>
-          </p>
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-4 flex flex-col gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
+            {COMPANY_LINKS.map((link, i) => (
+              <span key={link.href} className="inline-flex items-center gap-3">
+                {i > 0 && <span className="text-slate-700 hidden sm:inline" aria-hidden>|</span>}
+                <Link
+                  href={link.href}
+                  className="text-[11px] sm:text-xs text-slate-500 hover:text-[#7dd3fc] transition-colors"
+                >
+                  {link.label}
+                </Link>
+              </span>
+            ))}
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p className="text-xs text-slate-500">
+              © {year} Digital Hub · No sign-up required
+            </p>
+            <p className="text-xs text-slate-500">
+              Powered by{' '}
+              <a
+                href="https://aurexone.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#2596be] hover:text-[#7dd3fc] transition-colors"
+              >
+                aurexone.com
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

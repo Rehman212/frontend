@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { TOOLS, CATEGORIES, type Tool } from '../lib/tools';
 
 const POPULAR_SLUGS = [
-  'merge/pdf',
+  'merge-pdf',
   'compress',
   'ocr',
   'remove-background',

@@ -10,7 +10,7 @@ export function BlogFaqList({ faqs }: { faqs: { question: string; answer: string
   return (
     <section className="mt-12 pt-10 border-t border-slate-200">
       <p className="text-xs font-semibold uppercase tracking-widest text-[#2596be] mb-2">FAQs</p>
-      <h2 className="text-2xl font-black text-gray-900 mb-6">Frequently asked questions</h2>
+      <h3 className="text-2xl font-black text-gray-900 mb-6">Frequently asked questions</h3>
       <div className="space-y-3">
         {faqs.map((faq, index) => {
           const isOpen = openIndex === index;

@@ -452,7 +452,8 @@ export function ToolIcon({ slug }: { slug: string }) {
   switch (slug) {
     // ── Organize ──────────────────────────────────────────────────────────────
     case 'merge':
-    case 'merge/pdf':     return <MergeIcon />;
+    case 'merge/pdf':
+    case 'merge-pdf':     return <MergeIcon />;
     case 'split':
     case 'split-pdf':      return <SplitIcon />;
     case 'selective-merge':
@@ -575,7 +576,7 @@ export function ToolIcon({ slug }: { slug: string }) {
 
 // ── Category → representative tool slug ──────────────────────────────────────
 const CAT_SLUG: Record<string, string> = {
-  'organize':    'merge/pdf',
+  'organize':    'merge-pdf',
   'optimize':    'compress',
   'to-pdf':      'word-to-pdf',
   'from-pdf':    'pdf-to-word',

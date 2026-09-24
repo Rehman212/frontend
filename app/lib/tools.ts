@@ -56,7 +56,7 @@ export const CATEGORIES = [
 export const TOOLS: Tool[] = [
   // ─── Merge, Split & Organize ───────────────────────────────────────────────
   {
-    slug: 'merge/pdf',
+    slug: 'merge-pdf',
     name: 'Merge PDF',
     description: 'Combine multiple PDF files into one single document',
     icon: '🔀',

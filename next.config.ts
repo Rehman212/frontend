@@ -3,7 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   async redirects() {
     return [
-      { source: '/tool/merge', destination: '/tool/merge/pdf', permanent: true },
+      { source: '/tool/merge', destination: '/tool/merge-pdf', permanent: true },
+      { source: '/tool/merge/pdf', destination: '/tool/merge-pdf', permanent: true },
       { source: '/tool/split', destination: '/tool/split-pdf', permanent: true },
     ];
   },

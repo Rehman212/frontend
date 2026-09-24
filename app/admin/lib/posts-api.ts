@@ -164,3 +164,14 @@ export async function updateSiteSettings(
   if (!res.ok) throw new Error(await parseError(res, 'Failed to save site settings'));
   return res.json();
 }
+
+export async function fixAllPostHeadings(
+  token: string,
+): Promise<{ total: number; updated: number; changed: { id: number; slug: string }[] }> {
+  const res = await fetch(`${API}/admin/posts/fix-headings`, {
+    method: 'POST',
+    headers: authHeaders(token),
+  });
+  if (!res.ok) throw new Error(await parseError(res, 'Failed to fix blog headings'));
+  return res.json();
+}

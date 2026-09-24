@@ -23,7 +23,7 @@ const TAB_LABELS: Record<string, string> = {
 };
 
 const POPULAR_SLUGS = new Set([
-  'merge/pdf',
+  'merge-pdf',
   'split-pdf',
   'compress',
   'ocr',
@@ -79,9 +79,9 @@ function ToolCard({ tool }: { tool: Tool }) {
 
         <div className="flex-1 min-w-0 pt-0.5">
           <div className="flex items-start justify-between gap-2">
-            <h4 className="text-sm sm:text-[15px] font-bold text-slate-900 leading-snug group-hover:text-[#2596be] transition-colors line-clamp-2">
+            <h3 className="text-sm sm:text-[15px] font-bold text-slate-900 leading-snug group-hover:text-[#2596be] transition-colors line-clamp-2">
               {tool.name}
-            </h4>
+            </h3>
 
             <div className="flex items-center gap-1 shrink-0">
               <ToolBadge tool={tool} />

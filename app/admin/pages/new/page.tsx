@@ -188,7 +188,7 @@ function PageEditorForm() {
           />
 
           {/* Editor container */}
-          <div className="rounded-sm overflow-hidden mb-4" style={{ border: '1px solid #c3c4c7' }}>
+          <div className="rounded-sm mb-4" style={{ border: '1px solid #c3c4c7' }}>
             <RichTextEditor value={content} onChange={setContent} />
           </div>
 

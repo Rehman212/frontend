@@ -303,3 +303,33 @@ section[id] {
 }
 .prose-page img { max-width: 100%; height: auto; margin: 1em 0; border-radius: 8px; }
 .prose-page a { color: #2596be; text-decoration: underline; }
+.prose-page table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25em 0;
+  font-size: 0.95em;
+  overflow-x: auto;
+  display: block;
+}
+.prose-page thead,
+.prose-page tbody,
+.prose-page tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.prose-page th,
+.prose-page td {
+  border: 1px solid #e2e8f0;
+  padding: 0.65em 0.85em;
+  text-align: left;
+  vertical-align: top;
+}
+.prose-page th {
+  background: #f8fafc;
+  font-weight: 700;
+  color: #0f172a;
+}
+.prose-page tr:nth-child(even) td {
+  background: #fafbfc;
+}

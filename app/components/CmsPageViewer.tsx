@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { SiteShell } from './SiteShell';
 import { type CmsPage } from '../admin/lib/cms-store';
 import { fetchPublishedPageBySlug } from '../admin/lib/pages-api';
+import { normalizeBlogContent } from '../lib/blog-html';
 
 function LoadingState() {
   return (
@@ -98,7 +99,7 @@ export function CmsPageViewer({ slug }: { slug: string }) {
         <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-8">{page.title}</h1>
         <div
           className="prose-page text-gray-700 text-[15px] leading-relaxed"
-          dangerouslySetInnerHTML={{ __html: page.content || '<p>No content yet.</p>' }}
+          dangerouslySetInnerHTML={{ __html: normalizeBlogContent(page.content || '<p>No content yet.</p>') }}
         />
       </article>
     </SiteShell>

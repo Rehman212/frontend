@@ -4,7 +4,7 @@ import { notFound, redirect } from 'next/navigation';
 import { SiteShell } from '../../components/SiteShell';
 import { BlogFaqList } from '../../components/BlogFaqList';
 import { fetchPublishedPostBySlug } from '../../admin/lib/posts-api';
-import { demoteContentHeadings } from '../../lib/blog-html';
+import { normalizeBlogContent } from '../../lib/blog-html';
 import { blogPostUrl, getSiteUrl, normalizeSlug } from '../../lib/site';
 
 export const dynamic = 'force-dynamic';
@@ -76,7 +76,7 @@ export default async function BlogPostPage({
   }
 
   const faqs = post.faqs ?? [];
-  const bodyHtml = demoteContentHeadings(post.content || '<p>No content yet.</p>');
+  const bodyHtml = normalizeBlogContent(post.content || '<p>No content yet.</p>');
   const canonical = blogPostUrl(post.slug);
   const title = post.seoTitle?.trim() || post.title;
 

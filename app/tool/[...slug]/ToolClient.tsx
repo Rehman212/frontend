@@ -505,9 +505,9 @@ export default function ToolClient({ slug }: { slug: string }) {
                 <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style={{ background: accentColor, color: '#fff' }}>
                   🎯
                 </div>
-                <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide">
+              <h2 className="font-bold text-gray-800 text-sm uppercase tracking-wide">
                   {tool.pdfPositionMode === 'point' ? 'Click to set position' : 'Drag to select area'}
-                </h3>
+                </h2>
               </div>
               {/* page navigation */}
               {pdfPageCount > 1 && (
@@ -651,7 +651,7 @@ export default function ToolClient({ slug }: { slug: string }) {
               <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style={{ background: accentColor, color: '#fff' }}>
                 ⚙
               </div>
-              <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide">Options</h3>
+              <h2 className="font-bold text-gray-800 text-sm uppercase tracking-wide">Options</h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -784,9 +784,9 @@ export default function ToolClient({ slug }: { slug: string }) {
           className="mt-8 rounded-2xl p-6"
           style={{ background: '#ffffff', border: '1.5px solid #e5e7eb', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}
         >
-          <h3 className="font-bold text-gray-700 mb-5 text-sm uppercase tracking-widest flex items-center gap-2">
+          <h2 className="font-bold text-gray-700 mb-5 text-sm uppercase tracking-widest flex items-center gap-2">
             <span>📖</span> How to use {tool.name}
-          </h3>
+          </h2>
           <ol className="space-y-3">
             {(isPosMode
               ? [

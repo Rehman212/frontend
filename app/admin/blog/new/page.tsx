@@ -214,7 +214,7 @@ function BlogPostForm() {
             <div className="px-5 pt-4">
               <FieldLabel>Content</FieldLabel>
             </div>
-            <div className="mx-5 mb-5 rounded-sm overflow-hidden" style={{ border: '1px solid #c3c4c7' }}>
+            <div className="mx-5 mb-5 rounded-sm" style={{ border: '1px solid #c3c4c7' }}>
               <RichTextEditor value={content} onChange={setContent} maxWords={MAX_POST_WORDS} />
             </div>
           </Card>
