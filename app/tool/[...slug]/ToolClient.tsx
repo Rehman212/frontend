@@ -2,12 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import Swal from 'sweetalert2';
 import { TOOLS } from '../../lib/tools';
 import { useAuth } from '../../context/AuthContext';
 import { apiPostBlob, saveConversion } from '../../lib/api';
 import { SiteShell } from '../../components/SiteShell';
+import { ToolPageExtras } from '../../components/ToolPageExtras';
+import { fetchToolPageContent } from '../../admin/lib/tool-pages-api';
+import { mergeToolPageData } from '../../lib/tool-page-html';
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
@@ -60,6 +62,24 @@ export default function ToolClient({ slug }: { slug: string }) {
   const [areaFinal, setAreaFinal]           = useState<{ fx1: number; fy1: number; fx2: number; fy2: number } | null>(null);
   const previewCacheRef = useRef<Map<number, string>>(new Map());
   const pdfImgRef       = useRef<HTMLImageElement>(null);
+  const [heroTitle, setHeroTitle] = useState(tool?.name ?? '');
+  const [heroDescription, setHeroDescription] = useState(tool?.description ?? '');
+
+  useEffect(() => {
+    if (!tool) return;
+    setHeroTitle(tool.name);
+    setHeroDescription(tool.description);
+    let cancelled = false;
+    fetchToolPageContent(tool.slug)
+      .then((saved) => {
+        if (cancelled) return;
+        const merged = mergeToolPageData(tool, saved);
+        setHeroTitle(merged.heroTitle);
+        setHeroDescription(merged.heroDescription);
+      })
+      .catch(() => { /* keep catalog defaults */ });
+    return () => { cancelled = true; };
+  }, [tool]);
 
   /* ── load PDF preview when file is chosen ── */
   useEffect(() => {
@@ -347,6 +367,7 @@ export default function ToolClient({ slug }: { slug: string }) {
   const isImageTool = tool.category.startsWith('img-');
   const accentColor = tool.color;
   const canSubmit   = files.length > 0 || (!!tool.fileOptional && !!params['url']?.trim());
+  const activeStep = downloadUrl ? 2 : files.length > 0 || (tool.fileOptional && params['url']?.trim()) ? 1 : 0;
 
   /* draw selection rect style */
   const selRect = (() => {
@@ -364,56 +385,108 @@ export default function ToolClient({ slug }: { slug: string }) {
 
   return (
     <SiteShell>
+      {/* Full-bleed stage: copy + live tool side by side */}
+      <section className="relative overflow-hidden bg-slate-950 text-white">
+        <div
+          className="absolute inset-0 pointer-events-none opacity-40"
+          style={{
+            background: `radial-gradient(ellipse 80% 60% at 10% 0%, ${accentColor}55, transparent 55%), radial-gradient(ellipse 50% 40% at 90% 20%, ${accentColor}33, transparent 50%)`,
+          }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.12]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)',
+            backgroundSize: '48px 48px',
+          }}
+        />
 
-      <main className="max-w-3xl mx-auto px-4 py-10">
+        <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 pt-8 sm:pt-10 pb-12 lg:pb-16">
+          <nav className="text-xs text-slate-400 mb-8 flex flex-wrap items-center gap-1.5">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <span className="text-slate-600">/</span>
+            <Link href="/tool" className="hover:text-white transition-colors">Tools</Link>
+            <span className="text-slate-600">/</span>
+            <span className="text-slate-200 truncate">{tool.name}</span>
+          </nav>
 
-        {/* ── Tool Hero ── */}
-        <div className="text-center mb-8">
-          <div
-            className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${tool.bgColor}, ${tool.borderColor})`, border: `2px solid ${tool.borderColor}` }}
-          >
-            {tool.icon}
-          </div>
-          <div
-            className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-3"
-            style={{ background: tool.bgColor, color: accentColor }}
-          >
-            {isImageTool ? 'Image Tool' : 'PDF Tool'}
-          </div>
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">{tool.name}</h1>
-          <p className="text-gray-500 text-base max-w-md mx-auto">{tool.description}</p>
-          {!user && (
-            <p className="text-xs text-gray-400 mt-3">
-              <Link href="/login" className="font-semibold hover:underline" style={{ color: '#2596be' }}>Sign in</Link>
-              {' '}to automatically save converted files to your account
-            </p>
-          )}
-        </div>
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+            {/* Left — story */}
+            <div className="lg:sticky lg:top-24 lg:self-start">
+              <p
+                className="text-[11px] font-bold uppercase tracking-[0.2em] mb-4"
+                style={{ color: accentColor }}
+              >
+                {isImageTool ? 'Image tool' : 'PDF tool'} · Free online
+              </p>
+              <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-[1.05] mb-4">
+                {heroTitle}
+              </h1>
+              <p className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-lg mb-8">
+                {heroDescription}
+              </p>
 
-        {/* ── Steps indicator ── */}
-        <div className="flex items-center justify-center gap-2 mb-8 select-none">
-          {['Upload', 'Configure', 'Download'].map((step, i) => (
-            <div key={step} className="flex items-center gap-2">
+              <div className="flex flex-wrap gap-2 mb-8">
+                {['Upload', 'Configure', 'Download'].map((step, i) => (
+                  <div
+                    key={step}
+                    className="flex items-center gap-2 text-xs font-semibold tracking-wide"
+                  >
+                    <span
+                      className="w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-black"
+                      style={{
+                        background: i <= activeStep ? accentColor : 'rgba(255,255,255,0.08)',
+                        color: i <= activeStep ? '#fff' : '#94a3b8',
+                      }}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className={i <= activeStep ? 'text-white' : 'text-slate-500'}>{step}</span>
+                    {i < 2 && <span className="text-slate-600 mx-1">—</span>}
+                  </div>
+                ))}
+              </div>
+
+              <ul className="space-y-3 text-sm text-slate-400">
+                <li className="flex gap-2"><span style={{ color: accentColor }}>▸</span> No signup required to download</li>
+                <li className="flex gap-2"><span style={{ color: accentColor }}>▸</span> Files removed after processing</li>
+                <li className="flex gap-2"><span style={{ color: accentColor }}>▸</span> Works on phone &amp; desktop</li>
+              </ul>
+
+              {!user && (
+                <p className="text-xs text-slate-500 mt-8">
+                  <Link href="/login" className="font-semibold hover:underline" style={{ color: accentColor }}>
+                    Sign in
+                  </Link>
+                  {' '}to save results to your account
+                </p>
+              )}
+            </div>
+
+            {/* Right — interactive workspace (this IS the product) */}
+            <div className="min-w-0">
               <div
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
+                className="rounded-2xl overflow-hidden"
                 style={{
-                  background: i === 0 ? accentColor : '#e5e7eb',
-                  color:      i === 0 ? '#fff'       : '#9ca3af',
+                  background: '#0f172a',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  boxShadow: `0 24px 80px ${accentColor}33`,
                 }}
               >
-                <span
-                  className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black"
-                  style={{ background: i === 0 ? 'rgba(255,255,255,0.25)' : '#d1d5db', color: i === 0 ? '#fff' : '#6b7280' }}
+                <div
+                  className="px-4 py-3 flex items-center justify-between text-xs font-semibold border-b border-white/10"
+                  style={{ background: 'rgba(15,23,42,0.9)' }}
                 >
-                  {i + 1}
-                </span>
-                {step}
-              </div>
-              {i < 2 && <span className="text-gray-300 text-xs">›</span>}
-            </div>
-          ))}
-        </div>
+                  <span className="text-slate-300 flex items-center gap-2">
+                    <span className="text-lg">{tool.icon}</span>
+                    {tool.name}
+                  </span>
+                  <span className="text-slate-500 uppercase tracking-wider">
+                    {tool.acceptedFormats.replace(/\./g, '').toUpperCase()}
+                  </span>
+                </div>
+                <div className="p-4 sm:p-5 bg-slate-900/80">
 
         {/* ── Upload / Drop Zone ── */}
         {!downloadUrl && (
@@ -422,11 +495,10 @@ export default function ToolClient({ slug }: { slug: string }) {
             onDragLeave={() => setDragging(false)}
             onDrop={handleDrop}
             onClick={() => inputRef.current?.click()}
-            className="relative rounded-3xl p-10 text-center cursor-pointer transition-all duration-200 mb-5 overflow-hidden"
+            className="relative rounded-xl p-8 sm:p-10 text-center cursor-pointer transition-all duration-200 mb-4 overflow-hidden"
             style={{
-              border: `2px dashed ${dragging ? accentColor : tool.borderColor}`,
-              background: dragging ? tool.bgColor : '#ffffff',
-              boxShadow: dragging ? `0 0 0 4px ${accentColor}22` : '0 1px 6px rgba(0,0,0,0.04)',
+              border: `1.5px dashed ${dragging ? accentColor : 'rgba(255,255,255,0.18)'}`,
+              background: dragging ? `${accentColor}22` : 'rgba(15,23,42,0.65)',
             }}
           >
             <div
@@ -447,18 +519,18 @@ export default function ToolClient({ slug }: { slug: string }) {
               {files.length > 0 ? (
                 <div>
                   <div className="text-5xl mb-3">✅</div>
-                  <p className="font-bold text-gray-800 text-lg mb-1">
+                  <p className="font-bold text-white text-lg mb-1">
                     {files.length === 1 ? files[0].name : `${files.length} files selected`}
                   </p>
-                  <p className="text-gray-400 text-sm mb-1">
+                  <p className="text-slate-400 text-sm mb-1">
                     {files.length === 1
                       ? `${(files[0].size / 1024 / 1024).toFixed(2)} MB`
                       : files.map((f) => f.name).join(', ')}
                   </p>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleReset(); }}
-                    className="mt-3 text-xs font-semibold px-3 py-1 rounded-full transition-all hover:opacity-80"
-                    style={{ background: '#fee2e2', color: '#ef4444' }}
+                    className="mt-3 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all hover:opacity-80"
+                    style={{ background: 'rgba(239,68,68,0.2)', color: '#fca5a5' }}
                   >
                     ✕ Remove file{files.length > 1 ? 's' : ''}
                   </button>
@@ -466,27 +538,27 @@ export default function ToolClient({ slug }: { slug: string }) {
               ) : (
                 <div>
                   <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"
-                    style={{ background: tool.bgColor }}
+                    className="w-14 h-14 rounded-xl flex items-center justify-center text-2xl mx-auto mb-4"
+                    style={{ background: `${accentColor}33`, color: accentColor }}
                   >
-                    ☁️
+                    ↑
                   </div>
-                  <p className="text-base font-bold text-gray-700 mb-1">
+                  <p className="text-base font-bold text-white mb-1">
                     {tool.inputLabel}
                   </p>
-                  <p className="text-sm text-gray-400 mb-4">
+                  <p className="text-sm text-slate-400 mb-4">
                     Drag &amp; drop here, or{' '}
                     <span className="font-semibold" style={{ color: accentColor }}>
                       click to browse
                     </span>
                   </p>
                   <div
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
-                    style={{ background: tool.bgColor, color: accentColor, border: `1px solid ${tool.borderColor}` }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
+                    style={{ background: `${accentColor}22`, color: accentColor, border: `1px solid ${accentColor}55` }}
                   >
                     Supported: {tool.acceptedFormats.toUpperCase().replace(/\./g, '').replace(/,/g, ' · ')}
                   </div>
-                  <p className="text-xs text-gray-300 mt-2">Max 100 MB</p>
+                  <p className="text-xs text-slate-500 mt-3">Max 100 MB</p>
                 </div>
               )}
             </div>
@@ -496,16 +568,16 @@ export default function ToolClient({ slug }: { slug: string }) {
         {/* ── PDF Canvas Picker (point / area mode) ── */}
         {!downloadUrl && isPosMode && files.length > 0 && (
           <div
-            className="rounded-2xl p-5 mb-5"
-            style={{ background: '#ffffff', border: `1.5px solid ${tool.borderColor}`, boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}
+            className="rounded-xl p-4 mb-4"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
           >
             {/* header */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style={{ background: accentColor, color: '#fff' }}>
-                  🎯
+                  ✎
                 </div>
-              <h2 className="font-bold text-gray-800 text-sm uppercase tracking-wide">
+              <h2 className="font-bold text-white text-sm uppercase tracking-wide">
                   {tool.pdfPositionMode === 'point' ? 'Click to set position' : 'Drag to select area'}
                 </h2>
               </div>
@@ -520,7 +592,7 @@ export default function ToolClient({ slug }: { slug: string }) {
                   >
                     ‹
                   </button>
-                  <span className="text-xs font-semibold text-gray-600">
+                  <span className="text-xs font-semibold text-slate-400">
                     Page {previewPage} / {pdfPageCount}
                   </span>
                   <button
@@ -536,7 +608,7 @@ export default function ToolClient({ slug }: { slug: string }) {
             </div>
 
             {/* instruction */}
-            <p className="text-xs text-gray-500 mb-3">
+            <p className="text-xs text-slate-400 mb-3">
               {tool.pdfPositionMode === 'point'
                 ? 'Click anywhere on the page below to place your annotation at that position.'
                 : 'Click and drag on the page below to select the region for your annotation.'}
@@ -644,43 +716,43 @@ export default function ToolClient({ slug }: { slug: string }) {
         {/* ── Parameters ── */}
         {!downloadUrl && visibleParams.length > 0 && (files.length > 0 || tool.fileOptional) && (
           <div
-            className="rounded-2xl p-6 mb-5"
-            style={{ background: '#ffffff', border: '1.5px solid #e5e7eb', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}
+            className="rounded-xl p-4 mb-4"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
           >
-            <div className="flex items-center gap-2 mb-5">
+            <div className="flex items-center gap-2 mb-4">
               <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style={{ background: accentColor, color: '#fff' }}>
                 ⚙
               </div>
-              <h2 className="font-bold text-gray-800 text-sm uppercase tracking-wide">Options</h2>
+              <h2 className="font-bold text-white text-sm uppercase tracking-wide">Options</h2>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {visibleParams.map((param) => (
                 <div key={param.name}>
-                  <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">
+                  <label className="block text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wide">
                     {param.label}
-                    {param.required ? <span className="text-red-500"> *</span> : null}
+                    {param.required ? <span className="text-red-400"> *</span> : null}
                   </label>
                   {param.type === 'select' ? (
                     <select
                       value={params[param.name] ?? ''}
                       onChange={(e) => setParams((prev) => ({ ...prev, [param.name]: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none transition-all"
-                      style={{ border: '1.5px solid #e5e7eb', background: '#f9fafb', color: '#111827' }}
+                      className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none transition-all text-white"
+                      style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(0,0,0,0.35)' }}
                     >
                       {param.options?.map((o) => (
                         <option key={o.value} value={o.value}>{o.label}</option>
                       ))}
                     </select>
                   ) : param.type === 'color' ? (
-                    <div className="flex items-center gap-3 px-3 py-2 rounded-xl" style={{ border: '1.5px solid #e5e7eb', background: '#f9fafb' }}>
+                    <div className="flex items-center gap-3 px-3 py-2 rounded-lg" style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(0,0,0,0.35)' }}>
                       <input
                         type="color"
                         value={params[param.name] ?? '#000000'}
                         onChange={(e) => setParams((prev) => ({ ...prev, [param.name]: e.target.value }))}
                         className="w-9 h-9 rounded-lg border-0 cursor-pointer bg-transparent"
                       />
-                      <span className="text-sm font-mono text-gray-600">{params[param.name]}</span>
+                      <span className="text-sm font-mono text-slate-300">{params[param.name]}</span>
                     </div>
                   ) : (
                     <input
@@ -688,8 +760,8 @@ export default function ToolClient({ slug }: { slug: string }) {
                       value={params[param.name] ?? ''}
                       placeholder={param.placeholder}
                       onChange={(e) => setParams((prev) => ({ ...prev, [param.name]: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl text-sm focus:outline-none transition-all"
-                      style={{ border: '1.5px solid #e5e7eb', background: '#f9fafb', color: '#111827' }}
+                      className="w-full px-3 py-2.5 rounded-lg text-sm focus:outline-none transition-all text-white placeholder:text-slate-500"
+                      style={{ border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(0,0,0,0.35)' }}
                     />
                   )}
                 </div>
@@ -737,22 +809,22 @@ export default function ToolClient({ slug }: { slug: string }) {
         {/* ── Download Card ── */}
         {downloadUrl && (
           <div
-            className="rounded-3xl p-10 text-center"
-            style={{ background: '#ffffff', border: `2px solid ${tool.borderColor}`, boxShadow: `0 8px 40px ${accentColor}22` }}
+            className="rounded-xl p-8 text-center"
+            style={{ background: 'rgba(255,255,255,0.05)', border: `1px solid ${accentColor}66` }}
           >
             <div
-              className="w-20 h-20 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-lg"
-              style={{ background: `linear-gradient(135deg, ${tool.bgColor}, ${tool.borderColor})` }}
+              className="w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-4"
+              style={{ background: `${accentColor}33` }}
             >
-              🎉
+              ✓
             </div>
-            <h2 className="text-2xl font-extrabold text-gray-900 mb-2">Ready to Download!</h2>
-            <p className="text-gray-400 text-sm mb-5">Your file has been processed successfully.</p>
+            <h2 className="text-2xl font-extrabold text-white mb-2">Ready to download</h2>
+            <p className="text-slate-400 text-sm mb-5">Your file has been processed successfully.</p>
 
             {saved && (
               <div
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold mb-5"
-                style={{ background: '#dcfce7', color: '#16a34a', border: '1px solid #bbf7d0' }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold mb-5"
+                style={{ background: 'rgba(22,163,74,0.2)', color: '#86efac', border: '1px solid rgba(22,163,74,0.35)' }}
               >
                 ✓ Saved to your account ·{' '}
                 <Link href="/dashboard" className="underline hover:no-underline">View My Files</Link>
@@ -763,75 +835,38 @@ export default function ToolClient({ slug }: { slug: string }) {
               <a
                 href={downloadUrl}
                 download={downloadName}
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-extrabold text-lg transition-all duration-200 shadow-md hover:shadow-xl hover:opacity-90 mb-5"
-                style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}bb)` }}
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-white font-extrabold text-lg transition-all duration-200 hover:opacity-90 mb-5"
+                style={{ background: accentColor }}
               >
-                ⬇️ Download {downloadName}
+                Download {downloadName}
               </a>
             </div>
             <button
               onClick={handleReset}
-              className="text-sm font-semibold transition-colors hover:opacity-70"
-              style={{ color: accentColor }}
+              className="text-sm font-semibold transition-colors hover:opacity-70 text-slate-400"
             >
               ↺ Process another file
             </button>
           </div>
         )}
 
-        {/* ── How it works ── */}
-        <div
-          className="mt-8 rounded-2xl p-6"
-          style={{ background: '#ffffff', border: '1.5px solid #e5e7eb', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}
-        >
-          <h2 className="font-bold text-gray-700 mb-5 text-sm uppercase tracking-widest flex items-center gap-2">
-            <span>📖</span> How to use {tool.name}
-          </h2>
-          <ol className="space-y-3">
-            {(isPosMode
-              ? [
-                  `Upload your ${tool.acceptedFormats.replace(/\./g, '').toUpperCase().replace(/,/g, ' / ')} file`,
-                  tool.pdfPositionMode === 'point'
-                    ? 'The PDF page will appear — click exactly where you want to place the annotation'
-                    : 'The PDF page will appear — click and drag to select the area for your annotation',
-                  tool.params && tool.params.filter(p => !PDF_POS_PARAMS.has(p.name)).length > 0
-                    ? 'Fill in the remaining options (text, color, etc.)'
-                    : null,
-                  `Click "Process ${tool.name}"`,
-                  `Download your ${tool.outputFormat}`,
-                ]
-              : [
-                  `Upload your ${tool.acceptedFormats.replace(/\./g, '').toUpperCase().replace(/,/g, ' / ')} file`,
-                  tool.params && tool.params.length > 0 ? 'Configure the options to your needs' : null,
-                  `Click "Process ${tool.name}"`,
-                  `Download your ${tool.outputFormat}`,
-                ]
-            )
-              .filter(Boolean)
-              .map((step, i) => (
-                <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
-                  <span
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-extrabold shrink-0 mt-0.5 shadow-sm"
-                    style={{ background: accentColor }}
-                  >
-                    {i + 1}
-                  </span>
-                  {step}
-                </li>
-              ))}
-          </ol>
-        </div>
+                </div>{/* workspace padding */}
+              </div>{/* workspace chrome */}
+            </div>{/* right col */}
+          </div>{/* grid */}
+        </div>{/* max-w */}
+      </section>
 
-        <div className="mt-8 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1 text-sm font-semibold transition-all hover:opacity-70"
-            style={{ color: accentColor }}
-          >
-            ← Back to all tools
-          </Link>
-        </div>
-      </main>
+      <ToolPageExtras tool={tool} />
+
+      <div className="bg-white py-10 text-center border-t border-slate-100">
+        <Link
+          href="/tool"
+          className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-600 hover:text-[#2596be] transition-colors"
+        >
+          ← All tools
+        </Link>
+      </div>
     </SiteShell>
   );
 }

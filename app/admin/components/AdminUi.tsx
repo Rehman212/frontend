@@ -171,11 +171,13 @@ export function TextInput({
   onChange,
   placeholder,
   type = 'text',
+  disabled,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  disabled?: boolean;
 }) {
   return (
     <input
@@ -183,7 +185,8 @@ export function TextInput({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full px-3.5 py-2.5 rounded-lg text-sm text-gray-900 placeholder-gray-400 outline-none transition-colors focus:ring-2 bg-white"
+      disabled={disabled}
+      className="w-full px-3.5 py-2.5 rounded-lg text-sm text-gray-900 placeholder-gray-400 outline-none transition-colors focus:ring-2 bg-white disabled:bg-gray-50 disabled:text-gray-600"
       style={{ border: '1px solid #e5e7eb', '--tw-ring-color': 'rgba(37,150,190,0.3)' } as React.CSSProperties}
     />
   );
@@ -194,11 +197,13 @@ export function TextArea({
   onChange,
   placeholder,
   rows = 5,
+  disabled,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   rows?: number;
+  disabled?: boolean;
 }) {
   return (
     <textarea
@@ -206,7 +211,8 @@ export function TextArea({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="w-full px-3.5 py-2.5 rounded-lg text-sm text-gray-900 placeholder-gray-400 outline-none resize-y transition-colors focus:ring-2 bg-white"
+      disabled={disabled}
+      className="w-full px-3.5 py-2.5 rounded-lg text-sm text-gray-900 placeholder-gray-400 outline-none resize-y transition-colors focus:ring-2 bg-white disabled:bg-gray-50 disabled:text-gray-600"
       style={{ border: '1px solid #e5e7eb' }}
     />
   );

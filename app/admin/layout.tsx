@@ -17,6 +17,7 @@ import {
   IconSettings,
   IconShield,
   IconSitemap,
+  IconTools,
   IconUsers,
 } from './components/AdminIcons';
 
@@ -45,6 +46,12 @@ const NAV_SECTIONS: NavSection[] = [
     items: [
       { href: '/admin/menu', label: 'Menu', icon: <IconMenu className="w-[18px] h-[18px]" /> },
       { href: '/admin/pages', label: 'Pages', icon: <IconPages className="w-[18px] h-[18px]" /> },
+      {
+        href: '/admin/tools',
+        label: 'All Tools',
+        icon: <IconTools className="w-[18px] h-[18px]" />,
+        match: (p) => p.startsWith('/admin/tools'),
+      },
       {
         href: '/admin/blog',
         label: 'Blog',
@@ -88,6 +95,9 @@ function pageTitle(pathname: string) {
     '/admin/menu': 'Menu',
     '/admin/pages': 'Pages',
     '/admin/pages/new': 'Page Editor',
+    '/admin/tools': 'All Tools',
+    '/admin/tools/edit': 'Edit Tool',
+    '/admin/tools/editor': 'Tool Editor',
     '/admin/blog': 'Blog',
     '/admin/blog/new': 'New Post',
     '/admin/sitemap': 'Sitemap',
@@ -382,7 +392,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main — width = viewport minus sidebar (no overflow jump) */}
       <div
-        className="flex flex-col min-h-screen min-w-0 w-full"
+        className="flex flex-col h-screen min-w-0 w-full overflow-hidden"
         style={{
           marginLeft: desktopOffset,
           width: desktopOffset ? `calc(100vw - ${desktopOffset}px)` : '100%',
@@ -458,7 +468,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
 
-        <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-6 overflow-y-auto">
+        <main className="flex-1 min-h-0 w-full px-4 sm:px-6 lg:px-8 py-5 sm:py-6 overflow-y-auto">
           {pathname !== '/admin' && (
             <p className="text-xs font-semibold mb-4 tracking-wide uppercase" style={{ color: APEX.muted }}>
               {pageTitle(pathname)}

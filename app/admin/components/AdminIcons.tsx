@@ -80,6 +80,18 @@ export function IconSitemap({ className = 'w-5 h-5' }: IconProps) {
   );
 }
 
+export function IconTools({ className = 'w-5 h-5' }: IconProps) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M11.42 15.17l-5.31 5.31a2.25 2.25 0 01-3.18-3.18l5.31-5.31m3.18-3.18l5.31-5.31a2.25 2.25 0 013.18 3.18l-5.31 5.31M8.25 8.25l7.5 7.5"
+      />
+    </svg>
+  );
+}
+
 export function IconSettings({ className = 'w-5 h-5' }: IconProps) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
