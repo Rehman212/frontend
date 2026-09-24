@@ -359,7 +359,7 @@ export const TOOLS: Tool[] = [
   },
   // ─── Document Optimization ────────────────────────────────────────────────
   {
-    slug: 'compress',
+    slug: 'compress-pdf',
     name: 'Compress PDF',
     description: 'Reduce PDF file size while maintaining quality',
     icon: '🗜️',
@@ -390,7 +390,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free PDF compress tool to reduce file size instantly online. Fast, easy, and 100% free—no installation needed. Try GoDocLab now!',
   },
   {
-    slug: 'rotate',
+    slug: 'rotate-pdf',
     name: 'Rotate PDF',
     description: 'Rotate PDF pages to the correct orientation',
     icon: '🔄',
@@ -421,7 +421,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free image rotate tool to rotate images instantly in any direction. Fast, easy, and 100% online — no installation needed. Try GoDocLab now!',
   },
   {
-    slug: 'repair',
+    slug: 'repair-pdf',
     name: 'Repair PDF',
     description: 'Fix corrupted or damaged PDF files',
     icon: '🔧',
@@ -627,7 +627,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free PDF to image tool to convert PDF pages into JPG or PNG instantly. Fast, easy, and 100% online — no installation needed.',
   },
   {
-    slug: 'extract',
+    slug: 'extract-pdf',
     name: 'Extract Pages',
     description: 'Extract pages or images from a PDF as a ZIP archive',
     icon: '📤',
@@ -802,7 +802,7 @@ export const TOOLS: Tool[] = [
   },
   // ─── Content Editing ───────────────────────────────────────────────────────
   {
-    slug: 'watermark',
+    slug: 'watermark-pdf',
     name: 'Add Watermark',
     description: 'Add text watermark to PDF pages',
     icon: '💧',
@@ -924,7 +924,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free page numbers tool to add page numbers to PDF instantly online. Fast, easy, and 100% free—no installation needed. Try GoDocLab now!',
   },
   {
-    slug: 'ocr',
+    slug: 'ocr-pdf',
     name: 'OCR PDF',
     description: 'Make scanned PDFs searchable with Optical Character Recognition',
     icon: '🔍',
@@ -1015,7 +1015,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free sticky note tool to create and manage notes instantly online. Fast, easy, and 100% web-based - no installation needed. Try GoDocLab!',
   },
   {
-    slug: 'highlight',
+    slug: 'highlight-pdf',
     name: 'Highlight Text',
     description: 'Add a highlight annotation over a specific area of a PDF',
     icon: '🖍️',
@@ -1042,7 +1042,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free highlight tool to highlight text in PDFs instantly online. Fast, easy, and 100% free—no installation needed. Try GoDocLab now!',
   },
   {
-    slug: 'underline',
+    slug: 'underline-pdf',
     name: 'Underline Text',
     description: 'Add an underline annotation to a specific area of a PDF',
     icon: '📏',
@@ -1068,7 +1068,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free underline tool to underline text instantly online. Fast, easy, and 100% free—no installation needed. Try GoDocLab now!',
   },
   {
-    slug: 'strikeout',
+    slug: 'strikeout-pdf',
     name: 'Strikeout',
     description: 'Add a strikeout annotation over a specific area of a PDF',
     icon: '✒️',
@@ -1238,7 +1238,7 @@ export const TOOLS: Tool[] = [
   },
   // ─── Security & Sign ───────────────────────────────────────────────────────
   {
-    slug: 'protect',
+    slug: 'protect-pdf',
     name: 'Protect PDF',
     description: 'Password protect your PDF to restrict access',
     icon: '🔐',
@@ -1259,7 +1259,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free PDF Protect tool to secure your PDF files with password protection instantly. Fast, easy, and 100% online — no installation needed.',
   },
   {
-    slug: 'unlock',
+    slug: 'unlock-pdf',
     name: 'Unlock PDF',
     description: 'Remove password protection from a PDF file',
     icon: '🔓',
@@ -1340,7 +1340,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free set permissions tool to manage file access instantly online. Fast, easy, and 100% free—no installation needed. Try GoDocLab now!',
   },
   {
-    slug: 'redact',
+    slug: 'redact-pdf',
     name: 'Redact PDF',
     description: 'Permanently black out sensitive areas on specific PDF pages',
     icon: '⬛',
@@ -1367,7 +1367,7 @@ export const TOOLS: Tool[] = [
     seoDescription: 'Use our free PDF redact tool to hide or remove sensitive text instantly online. Fast, easy, and 100% free—no installation needed. Try GoDocLab now!',
   },
   {
-    slug: 'stamp',
+    slug: 'stamp-pdf',
     name: 'Add Stamp',
     description: 'Add a visual approval or e-sign stamp (e.g. APPROVED, DRAFT) to PDF pages',
     icon: '🔏',

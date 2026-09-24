@@ -10,10 +10,10 @@ const imageCategories = CATEGORIES.filter((c) => c.id.startsWith('img-'));
 
 const POPULAR_TOOLS = [
   { label: 'Merge PDF', href: '/tool/merge-pdf' },
-  { label: 'Compress PDF', href: '/tool/compress' },
+  { label: 'Compress PDF', href: '/tool/compress-pdf' },
   { label: 'PDF to Image', href: '/tool/pdf-to-image' },
   { label: 'Remove Background', href: '/tool/remove-background' },
-  { label: 'OCR PDF', href: '/tool/ocr' },
+  { label: 'OCR PDF', href: '/tool/ocr-pdf' },
 ];
 
 const QUICK_LINKS = [
