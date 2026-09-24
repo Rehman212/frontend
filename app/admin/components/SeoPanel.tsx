@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { MetaBox } from './MetaBox';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.godoclab.com';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://godoclab.com';
 
 const TITLE_MAX = 60;
 const DESC_MAX = 160;

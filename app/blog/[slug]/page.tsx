@@ -5,7 +5,7 @@ import { SiteShell } from '../../components/SiteShell';
 import { BlogFaqList } from '../../components/BlogFaqList';
 import { fetchPublishedPostBySlug } from '../../admin/lib/posts-api';
 import { normalizeBlogContent } from '../../lib/blog-html';
-import { blogPostUrl, getSiteUrl, normalizeSlug } from '../../lib/site';
+import { blogPostUrl, getSiteUrl, htmlToMetaDescription, normalizeSlug } from '../../lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,7 +30,11 @@ export async function generateMetadata({
   }
 
   const title = post.seoTitle?.trim() || post.title;
-  const description = post.seoDescription?.trim() || post.excerpt || '';
+  const description =
+    post.seoDescription?.trim() ||
+    post.excerpt?.trim() ||
+    htmlToMetaDescription(post.content) ||
+    `${post.title} — GoDocLab Blog`;
   const canonical = blogPostUrl(post.slug);
   const pageTitle = title.includes('GoDocLab') ? title : `${title} — GoDocLab Blog`;
 
@@ -38,6 +42,7 @@ export async function generateMetadata({
     title: pageTitle,
     description,
     keywords: post.seoKeywords?.trim() || undefined,
+    robots: { index: true, follow: true },
     alternates: { canonical },
     openGraph: {
       title: pageTitle,

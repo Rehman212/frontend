@@ -8,7 +8,7 @@ const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-type PublishedPost = {
+type SitemapPost = {
   slug: string;
   updatedAt?: string;
   createdAt?: string;
@@ -36,11 +36,15 @@ function uniqueUrls(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
   return out;
 }
 
-async function fetchPublishedPosts(): Promise<PublishedPost[]> {
+async function fetchSitemapPosts(): Promise<SitemapPost[]> {
   try {
-    const res = await fetch(`${API}/posts`, { cache: 'no-store' });
+    // Prefer ultra-light endpoint; fall back to slim /posts list
+    let res = await fetch(`${API}/posts/sitemap`, { cache: 'no-store' });
+    if (!res.ok) {
+      res = await fetch(`${API}/posts`, { cache: 'no-store' });
+    }
     if (!res.ok) return [];
-    return (await res.json()) as PublishedPost[];
+    return (await res.json()) as SitemapPost[];
   } catch {
     return [];
   }
@@ -67,8 +71,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${site}/`, lastModified: now, changeFrequency: 'daily', priority: 1 },
     { url: `${site}/blog`, lastModified: now, changeFrequency: 'daily', priority: 0.9 },
     { url: `${site}/tool`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
-    { url: `${site}/login`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${site}/signup`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
   ];
 
   const toolRoutes: MetadataRoute.Sitemap = TOOLS.map((tool) => ({
@@ -79,7 +81,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const [posts, cmsSlugs] = await Promise.all([
-    fetchPublishedPosts(),
+    fetchSitemapPosts(),
     fetchPublishedPageSlugs(),
   ]);
 
