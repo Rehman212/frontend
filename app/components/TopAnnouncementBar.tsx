@@ -15,7 +15,7 @@ export function TopAnnouncementBar() {
       <div className="max-w-[1400px] mx-auto px-10 sm:px-12 py-2 flex items-center justify-center">
         <p className="text-[11px] sm:text-xs text-center text-slate-200 leading-snug pr-2">
           <span className="text-white font-semibold">100% free tools</span>
-          {' '}— no signup, no subscription and private browser processing.
+          {' '}— no signup, no subscription. Files are processed on our servers and removed after use.
         </p>
       </div>
 

@@ -77,9 +77,8 @@ export function SecurityTrustCta() {
             </h2>
 
             <p className="text-base text-slate-300 leading-relaxed max-w-xl mb-8">
-              We know your documents matter. That&apos;s why every file is handled with secure
-              connections, private processing, and automatic cleanup — so you can focus on results,
-              not worry.
+              Files travel over HTTPS, are processed on GoDocLab servers, then removed
+              automatically. You can focus on the result — not leftover copies of your documents.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -93,7 +92,7 @@ export function SecurityTrustCta() {
                 </svg>
               </Link>
               <Link
-                href="#pdf-section"
+                href="/tools"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-white border border-white/25 bg-white/5 hover:bg-white/10 transition-all"
               >
                 Browse All Tools

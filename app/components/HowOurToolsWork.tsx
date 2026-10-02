@@ -27,7 +27,7 @@ const STEPS = [
   {
     step: '03',
     title: 'Process Instantly',
-    description: 'Our servers handle the job in seconds. Adjust settings if needed — quality, format, pages and more.',
+    description: 'Our servers process the file over HTTPS in seconds. Adjust settings if needed — quality, format, pages and more.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="w-7 h-7">
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -37,7 +37,7 @@ const STEPS = [
   {
     step: '04',
     title: 'Download Result',
-    description: 'Get your processed file immediately. No watermarks, no sign-up — just download and you\'re done.',
+    description: 'Download your result right away. Files are then removed from our servers. No watermarks, no sign-up.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="w-7 h-7">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -103,7 +103,7 @@ export function HowOurToolsWork() {
           <p className="text-sm text-slate-500 mb-4">Ready to try it? Pick any tool and start in seconds.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
-              href="/#pdf-section"
+              href="/tools"
               className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 hover:-translate-y-0.5"
               style={{
                 background: 'linear-gradient(135deg, #2596be, #1d4ed8)',

@@ -17,8 +17,8 @@ const POPULAR_TOOLS = [
 ];
 
 const QUICK_LINKS = [
-  { label: 'All PDF Tools', href: '/tool' },
-  { label: 'All Image Tools', href: '/tool#img-section' },
+  { label: 'All PDF Tools', href: '/tools' },
+  { label: 'All Image Tools', href: '/tools#img-section' },
   { label: 'Blog', href: '/blog' },
   { label: 'Sitemap', href: '/sitemap.xml' },
   { label: 'Login', href: '/login' },
@@ -88,7 +88,7 @@ export function SiteFooter() {
             <Link href="/" className="inline-block mb-5">
               <Image
                 src={branding.footerLogo}
-                alt="Digital Hub"
+                alt="GoDocLab"
                 width={280}
                 height={84}
                 className="h-16 sm:h-[4.5rem] w-auto object-contain brightness-0 invert opacity-90 hover:opacity-100 transition-opacity"
@@ -174,7 +174,7 @@ export function SiteFooter() {
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
             <p className="text-xs text-slate-500">
-              © {year} Digital Hub · No sign-up required
+              © {year} GoDocLab · No sign-up required
             </p>
             <p className="text-xs text-slate-500">
               Powered by{' '}

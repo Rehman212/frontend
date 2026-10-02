@@ -52,8 +52,8 @@ const REASONS = [
         <path d="M8 21h8M12 17v4" />
       </svg>
     ),
-    title: 'Works in Your Browser',
-    description: 'No software to install. Works on Windows, Mac, Linux, iOS and Android — anywhere online.',
+    title: 'No software to install',
+    description: 'Open any tool in your browser on Windows, Mac, Linux, iOS or Android. Processing still runs on our servers.',
     color: '#059669',
   },
   {

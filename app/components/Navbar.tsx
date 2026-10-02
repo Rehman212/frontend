@@ -52,7 +52,7 @@ export function Navbar() {
         <Link href="/" className="shrink-0">
           <Image
             src={branding.headerLogo}
-            alt="Digital Hub"
+            alt="GoDocLab"
             width={240}
             height={64}
             className="h-12 sm:h-14 w-auto object-contain"

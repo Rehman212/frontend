@@ -6,7 +6,7 @@ import {
   fetchSiteSettings,
   type BlogPost,
 } from '../admin/lib/posts-api';
-import { blogPostPath, getSiteUrl } from '../lib/site';
+import { blogPostPath, getSiteUrl, displayAuthor } from '../lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -100,7 +100,7 @@ function BlogCard({ post }: { post: BlogPost }) {
             </p>
           )}
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
-            <span className="text-xs text-gray-400 truncate">By {post.author}</span>
+            <span className="text-xs text-gray-400 truncate">By {displayAuthor(post.author)}</span>
             <span className="text-xs font-bold text-[#2596be] group-hover:underline shrink-0">
               Read more →
             </span>

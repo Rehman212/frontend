@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { SiteShell } from './components/SiteShell';
 import { HeroSection } from './components/HeroSection';
 import { PopularToolsSection } from './components/PopularToolsSection';
@@ -8,6 +9,21 @@ import { BlogSection } from './components/BlogSection';
 import { HowOurToolsWork } from './components/HowOurToolsWork';
 import { SecurityTrustCta } from './components/SecurityTrustCta';
 import { ToolsCatalog } from './components/ToolsCatalog';
+import { getSiteUrl } from './lib/site';
+
+export const metadata: Metadata = {
+  title: 'GoDocLab — Every PDF Tool You Need',
+  description:
+    'Merge, split, compress, convert, rotate, watermark, protect PDFs and more. Files are processed securely on GoDocLab servers and removed after use. 100% free, no sign-up.',
+  alternates: { canonical: `${getSiteUrl()}/` },
+  openGraph: {
+    title: 'GoDocLab — Every PDF Tool You Need',
+    description: 'Free PDF and image tools. Processed on our servers, then deleted. No sign-up.',
+    url: `${getSiteUrl()}/`,
+    siteName: 'GoDocLab',
+    type: 'website',
+  },
+};
 
 export default function Home() {
   return (

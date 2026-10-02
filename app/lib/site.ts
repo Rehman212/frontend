@@ -58,3 +58,10 @@ export function htmlToMetaDescription(html: string, max = 160): string {
   const lastSpace = cut.lastIndexOf(' ');
   return `${(lastSpace > 80 ? cut.slice(0, lastSpace) : cut).trim()}…`;
 }
+
+/** Public byline — never show a generic CMS login name. */
+export function displayAuthor(raw?: string | null) {
+  const value = (raw || '').trim();
+  if (!value || /^admin$/i.test(value)) return 'GoDocLab Editorial';
+  return value;
+}

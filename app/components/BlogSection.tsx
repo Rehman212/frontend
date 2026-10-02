@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { fetchPublishedPosts, type BlogPost } from '../admin/lib/posts-api';
+import { displayAuthor } from '../lib/site';
 
 type BlogDisplayItem = {
   id: string;
@@ -67,7 +68,7 @@ function postToDisplay(post: BlogPost, index: number): BlogDisplayItem {
     title: post.title,
     href: `/blog/${post.slug}`,
     excerpt: post.excerpt || post.seoDescription || 'Read the full article on our blog.',
-    author: post.author,
+    author: displayAuthor(post.author),
     createdAt: post.createdAt,
     category: 'Article',
     readTime: estimateReadTime(post.excerpt || post.content || post.title),

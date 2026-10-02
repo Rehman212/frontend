@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { TOOLS, CATEGORIES } from '../lib/tools';
 
-const FEATURED_SLUGS = ['merge-pdf', 'compress', 'pdf-to-image', 'remove-background', 'ocr', 'watermark'];
+const FEATURED_SLUGS = ['merge-pdf', 'compress-pdf', 'pdf-to-image', 'remove-background', 'ocr-pdf', 'watermark-pdf'];
 
 const TRUST_ITEMS = [
   { icon: '🔒', label: 'Secure processing' },
@@ -127,7 +127,7 @@ export function HeroSection() {
                 href="/tool/merge-pdf"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold w-full sm:w-auto hero-cta-secondary"
               >
-                <span>🔀</span> Merge PDF — Most Popularsss
+                <span>🔀</span> Merge PDF — Most Popular
               </Link>
             </div>
 

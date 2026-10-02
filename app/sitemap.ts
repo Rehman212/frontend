@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { TOOLS } from './lib/tools';
 import { blogPostUrl, getSiteUrl, normalizeSlug } from './lib/site';
+import { trustPageSlugs } from './lib/trust-pages';
 
 const API = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
@@ -80,6 +81,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  const trustRoutes: MetadataRoute.Sitemap = trustPageSlugs().map((slug) => ({
+    url: `${site}/${slug}`,
+    lastModified: now,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   const [posts, cmsSlugs] = await Promise.all([
     fetchSitemapPosts(),
     fetchPublishedPageSlugs(),
@@ -109,5 +117,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return uniqueUrls([...staticRoutes, ...toolRoutes, ...postRoutes, ...pageRoutes]);
+  return uniqueUrls([...staticRoutes, ...trustRoutes, ...toolRoutes, ...postRoutes, ...pageRoutes]);
 }

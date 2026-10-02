@@ -5,13 +5,13 @@ import { TOOLS, CATEGORIES, type Tool } from '../lib/tools';
 
 const POPULAR_SLUGS = [
   'merge-pdf',
-  'compress',
-  'ocr',
+  'compress-pdf',
+  'ocr-pdf',
   'remove-background',
   'pdf-to-image',
   'split-pdf',
   'word-to-pdf',
-  'watermark',
+  'watermark-pdf',
   'jpg-to-png',
   'pdf-to-word',
 ];
@@ -24,12 +24,12 @@ function getPopularTools(): Tool[] {
   return POPULAR_SLUGS.map((slug) => TOOLS.find((t) => t.slug === slug)).filter(Boolean) as Tool[];
 }
 
-function ToolSlideCard({ tool }: { tool: Tool }) {
-  return (
-    <Link
-      href={`/tool/${tool.slug}`}
-      className="group relative flex items-center gap-3 shrink-0 w-[240px] sm:w-[255px] h-[72px] bg-white rounded-xl border border-slate-200/90 px-3.5 py-3 shadow-sm hover:shadow-md hover:border-[#2596be]/30 hover:-translate-y-0.5 transition-all duration-300"
-    >
+function ToolSlideCard({ tool, inert }: { tool: Tool; inert?: boolean }) {
+  const className =
+    'group relative flex items-center gap-3 shrink-0 w-[240px] sm:w-[255px] h-[72px] bg-white rounded-xl border border-slate-200/90 px-3.5 py-3 shadow-sm hover:shadow-md hover:border-[#2596be]/30 hover:-translate-y-0.5 transition-all duration-300';
+
+  const inner = (
+    <>
       <div
         className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0 transition-transform duration-300 group-hover:scale-105"
         style={{
@@ -57,21 +57,38 @@ function ToolSlideCard({ tool }: { tool: Tool }) {
       >
         <path d="M5 12h14M12 5l7 7-7 7" />
       </svg>
+    </>
+  );
+
+  if (inert) {
+    return (
+      <div className={className} aria-hidden="true">
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <Link href={`/tool/${tool.slug}`} className={className}>
+      {inner}
     </Link>
   );
 }
 
 function MarqueeRow({ tools, reverse }: { tools: Tool[]; reverse?: boolean }) {
-  const items = [...tools, ...tools];
-
   return (
     <div className="reviews-marquee-mask overflow-hidden">
       <div
         className={`reviews-marquee-track flex items-center gap-3 w-max ${reverse ? 'reviews-marquee-reverse' : 'reviews-marquee-forward'}`}
       >
-        {items.map((tool, i) => (
-          <ToolSlideCard key={`${tool.slug}-${i}`} tool={tool} />
+        {tools.map((tool) => (
+          <ToolSlideCard key={tool.slug} tool={tool} />
         ))}
+        <div className="flex items-center gap-3" aria-hidden="true">
+          {tools.map((tool) => (
+            <ToolSlideCard key={`clone-${tool.slug}`} tool={tool} inert />
+          ))}
+        </div>
       </div>
     </div>
   );

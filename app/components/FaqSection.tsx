@@ -6,7 +6,7 @@ const FAQS = [
   {
     question: 'Are all tools really free?',
     answer:
-      'Yes. Every PDF and image tool on Digital Hub is 100% free with no hidden fees, subscriptions, or premium tiers. You can use any tool as many times as you need.',
+      'Yes. Every PDF and image tool on GoDocLab is 100% free with no hidden fees, subscriptions, or premium tiers. You can use any tool as many times as you need.',
   },
   {
     question: 'Do I need to create an account?',
@@ -16,7 +16,7 @@ const FAQS = [
   {
     question: 'Is my data safe and private?',
     answer:
-      'Your files are processed securely over encrypted connections. Uploaded files are automatically deleted from our servers after processing — we do not store or share your documents.',
+      'Files are uploaded over HTTPS and processed on GoDocLab servers — not entirely in your browser. After processing, files are deleted from our servers. We do not sell or share your documents.',
   },
   {
     question: 'What file formats are supported?',

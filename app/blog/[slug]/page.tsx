@@ -11,7 +11,7 @@ import {
 } from '../../admin/lib/posts-api';
 import { normalizeBlogContent } from '../../lib/blog-html';
 import { estimateReadingMinutes, withHeadingAnchors } from '../../lib/blog-toc';
-import { blogPostUrl, getSiteUrl, htmlToMetaDescription, normalizeSlug } from '../../lib/site';
+import { blogPostUrl, getSiteUrl, htmlToMetaDescription, normalizeSlug, displayAuthor } from '../../lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -113,6 +113,7 @@ export default async function BlogPostPage({
   const minutes = estimateReadingMinutes(normalized);
   const canonical = blogPostUrl(post.slug);
   const title = post.seoTitle?.trim() || post.title;
+  const byline = displayAuthor(post.author);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -121,7 +122,10 @@ export default async function BlogPostPage({
     description: post.seoDescription?.trim() || post.excerpt || '',
     datePublished: post.createdAt,
     dateModified: post.updatedAt,
-    author: { '@type': 'Person', name: post.author },
+    author:
+      byline === 'GoDocLab Editorial'
+        ? { '@type': 'Organization', name: byline }
+        : { '@type': 'Person', name: byline },
     publisher: { '@type': 'Organization', name: 'GoDocLab', url: getSiteUrl() },
     mainEntityOfPage: canonical,
     image: post.featuredImage || undefined,
@@ -225,11 +229,11 @@ export default async function BlogPostPage({
                 style={{ background: 'linear-gradient(135deg, #1e3a5f, #2596be)' }}
                 aria-hidden
               >
-                {(post.author || 'A').charAt(0).toUpperCase()}
+                {(byline || 'G').charAt(0).toUpperCase()}
               </span>
               <div className="leading-tight">
-                <p className="text-sm font-semibold text-slate-800">By {post.author}</p>
-                <p className="text-[11px] text-slate-500">GoDocLab Editorial</p>
+                <p className="text-sm font-semibold text-slate-800">By {byline}</p>
+                <p className="text-[11px] text-slate-500">GoDocLab</p>
               </div>
             </div>
           </div>
