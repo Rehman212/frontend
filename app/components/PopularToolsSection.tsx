@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { TOOLS, CATEGORIES, type Tool } from '../lib/tools';
 
@@ -76,19 +77,24 @@ function ToolSlideCard({ tool, inert }: { tool: Tool; inert?: boolean }) {
 }
 
 function MarqueeRow({ tools, reverse }: { tools: Tool[]; reverse?: boolean }) {
+  const [loop, setLoop] = useState(false);
+  useEffect(() => { setLoop(true); }, []);
+
   return (
     <div className="reviews-marquee-mask overflow-hidden">
       <div
-        className={`reviews-marquee-track flex items-center gap-3 w-max ${reverse ? 'reviews-marquee-reverse' : 'reviews-marquee-forward'}`}
+        className={`reviews-marquee-track flex items-center gap-3 w-max ${loop ? (reverse ? 'reviews-marquee-reverse' : 'reviews-marquee-forward') : ''}`}
       >
         {tools.map((tool) => (
           <ToolSlideCard key={tool.slug} tool={tool} />
         ))}
-        <div className="flex items-center gap-3" aria-hidden="true">
-          {tools.map((tool) => (
-            <ToolSlideCard key={`clone-${tool.slug}`} tool={tool} inert />
-          ))}
-        </div>
+        {loop && (
+          <div className="flex items-center gap-3" aria-hidden="true">
+            {tools.map((tool) => (
+              <ToolSlideCard key={`clone-${tool.slug}`} tool={tool} inert />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -12,6 +12,8 @@ import {
 import { normalizeBlogContent } from '../../lib/blog-html';
 import { estimateReadingMinutes, withHeadingAnchors } from '../../lib/blog-toc';
 import { blogPostUrl, getSiteUrl, htmlToMetaDescription, normalizeSlug, displayAuthor } from '../../lib/site';
+import { JsonLd } from '../../components/JsonLd';
+import { breadcrumbLd } from '../../lib/json-ld';
 
 export const dynamic = 'force-dynamic';
 
@@ -115,9 +117,10 @@ export default async function BlogPostPage({
   const title = post.seoTitle?.trim() || post.title;
   const byline = displayAuthor(post.author);
 
+  const site = getSiteUrl();
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
+    '@type': ['BlogPosting', 'Article'],
     headline: title,
     description: post.seoDescription?.trim() || post.excerpt || '',
     datePublished: post.createdAt,
@@ -126,10 +129,15 @@ export default async function BlogPostPage({
       byline === 'GoDocLab Editorial'
         ? { '@type': 'Organization', name: byline }
         : { '@type': 'Person', name: byline },
-    publisher: { '@type': 'Organization', name: 'GoDocLab', url: getSiteUrl() },
+    publisher: { '@id': `${site}/#organization` },
     mainEntityOfPage: canonical,
     image: post.featuredImage || undefined,
   };
+  const crumbs = breadcrumbLd([
+    { name: 'Home', url: `${site}/` },
+    { name: 'Blog', url: `${site}/blog` },
+    { name: post.title, url: canonical },
+  ]);
 
   const faqLd =
     faqs.length > 0
@@ -146,16 +154,9 @@ export default async function BlogPostPage({
 
   return (
     <SiteShell>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      {faqLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
-        />
-      )}
+      <JsonLd data={jsonLd} />
+      <JsonLd data={crumbs} />
+      {faqLd && <JsonLd data={faqLd} />}
 
       {/* Magazine layout: image + title side-by-side, then body | rail */}
       <div className="max-w-[1560px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7">

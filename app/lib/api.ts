@@ -17,19 +17,55 @@ function authHeaders(): HeadersInit {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+function base64ToBlob(b64: string, mime: string): Blob {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type: mime || 'application/octet-stream' });
+}
+
 /** POST with FormData (file upload) — returns Blob */
 export async function apiPostBlob(
   path: string,
   formData: FormData,
 ): Promise<Blob> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: 'POST',
-    headers: authHeaders(),
-    body: formData,
-  });
+  let res: Response;
+  const url = `${API_BASE}${path}${path.includes('?') ? '&' : '?'}xhr=1`;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        ...authHeaders(),
+        Accept: 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: formData,
+      cache: 'no-store',
+    });
+  } catch {
+    throw new Error(
+      'Could not reach the processing server. Check that the API is running, then try again.',
+    );
+  }
   if (!res.ok) {
     const text = await res.text();
+    try {
+      const data = JSON.parse(text) as { message?: string };
+      if (typeof data.message === 'string' && data.message.trim()) {
+        throw new Error(data.message);
+      }
+    } catch (e) {
+      if (e instanceof Error && e.message !== text) throw e;
+    }
     throw new Error(text || `Server error ${res.status}`);
+  }
+  const contentType = (res.headers.get('content-type') || '').toLowerCase();
+  if (contentType.includes('application/json')) {
+    const payload = (await res.json()) as { mime?: string; data?: string; message?: string };
+    if (typeof payload.data === 'string' && payload.data.length > 0) {
+      return base64ToBlob(payload.data, payload.mime || 'application/pdf');
+    }
+    throw new Error(payload.message || 'Empty result from server');
   }
   return res.blob();
 }

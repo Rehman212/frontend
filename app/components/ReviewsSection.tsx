@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 const REVIEWS = [
   {
     name: 'Sarah Mitchell',
@@ -84,9 +86,12 @@ function QuoteIcon() {
   );
 }
 
-function ReviewCard({ review }: { review: (typeof REVIEWS)[number] }) {
+function ReviewCard({ review, inert }: { review: (typeof REVIEWS)[number]; inert?: boolean }) {
   return (
-    <div className="relative shrink-0 w-[320px] sm:w-[360px] bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm hover:shadow-md hover:border-[#2596be]/20 transition-all duration-300">
+    <div
+      className="relative shrink-0 w-[320px] sm:w-[360px] bg-white rounded-2xl border border-slate-200/90 p-6 shadow-sm hover:shadow-md hover:border-[#2596be]/20 transition-all duration-300"
+      aria-hidden={inert || undefined}
+    >
       <QuoteIcon />
 
       <div className="flex items-center gap-3 mb-4 pr-8">
@@ -110,14 +115,19 @@ function ReviewCard({ review }: { review: (typeof REVIEWS)[number] }) {
 }
 
 function MarqueeRow({ reviews, reverse }: { reviews: typeof REVIEWS; reverse?: boolean }) {
-  const items = [...reviews, ...reviews];
+  const [loop, setLoop] = useState(false);
+  useEffect(() => { setLoop(true); }, []);
 
   return (
     <div className="reviews-marquee-mask overflow-hidden">
-      <div className={`reviews-marquee-track flex gap-4 w-max ${reverse ? 'reviews-marquee-reverse' : 'reviews-marquee-forward'}`}>
-        {items.map((review, i) => (
-          <ReviewCard key={`${review.name}-${i}`} review={review} />
+      <div className={`reviews-marquee-track flex gap-4 w-max ${loop ? (reverse ? 'reviews-marquee-reverse' : 'reviews-marquee-forward') : ''}`}>
+        {reviews.map((review) => (
+          <ReviewCard key={review.name} review={review} />
         ))}
+        {loop &&
+          reviews.map((review) => (
+            <ReviewCard key={`clone-${review.name}`} review={review} inert />
+          ))}
       </div>
     </div>
   );

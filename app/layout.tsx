@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./components/Providers";
+import { JsonLd } from "./components/JsonLd";
+import { siteGraph } from "./lib/json-ld";
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://godoclab.com'),
@@ -35,7 +37,10 @@ export default function RootLayout({
       className="h-full antialiased"
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col"><Providers>{children}</Providers></body>
+      <body className="min-h-full flex flex-col">
+        <JsonLd data={siteGraph()} />
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

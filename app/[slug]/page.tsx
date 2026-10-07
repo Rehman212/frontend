@@ -11,6 +11,8 @@ import {
   trustPageSlugs,
 } from '../lib/trust-pages';
 import { getSiteUrl, htmlToMetaDescription, normalizeSlug } from '../lib/site';
+import { JsonLd } from '../components/JsonLd';
+import { breadcrumbLd } from '../lib/json-ld';
 import cmsSlugs from '../../public/cms-slugs.json';
 
 export const dynamic = 'force-dynamic';
@@ -147,18 +149,21 @@ export default async function CmsSlugPage({
   return (
     <SiteShell>
       <article className="max-w-4xl mx-auto px-4 py-10 sm:py-14">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebPage',
-              name: page.title,
-              description: page.seoDescription,
-              url: canonical,
-              isPartOf: { '@type': 'WebSite', name: 'GoDocLab', url: getSiteUrl() },
-            }),
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'WebPage',
+            name: page.title,
+            description: page.seoDescription,
+            url: canonical,
+            isPartOf: { '@id': `${getSiteUrl()}/#website` },
           }}
+        />
+        <JsonLd
+          data={breadcrumbLd([
+            { name: 'Home', url: `${getSiteUrl()}/` },
+            { name: page.title, url: canonical },
+          ])}
         />
         <h1 className="text-3xl sm:text-4xl font-black text-gray-900 mb-8">{page.title}</h1>
         <div

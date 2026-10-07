@@ -181,7 +181,7 @@ export function SiteFooter() {
               <a
                 href="https://aurexone.com"
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer nofollow"
                 className="font-semibold text-[#2596be] hover:text-[#7dd3fc] transition-colors"
               >
                 aurexone.com

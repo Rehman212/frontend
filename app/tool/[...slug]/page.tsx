@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { TOOLS } from '../../lib/tools';
 import ToolClient from './ToolClient';
+import { JsonLd } from '../../components/JsonLd';
+import { breadcrumbLd } from '../../lib/json-ld';
+import { getSiteUrl } from '../../lib/site';
 
 function slugFromParams(slug: string | string[]) {
   return Array.isArray(slug) ? slug.join('/') : slug;
@@ -47,28 +50,33 @@ export default async function ToolPage({ params }: { params: Promise<{ slug: str
   const slug = slugFromParams(parts);
   const tool = TOOLS.find((t) => t.slug === slug);
 
+  const site = getSiteUrl();
+  const toolUrl = `${site}/tool/${slug}`;
   const schema = tool
     ? {
         '@context': 'https://schema.org',
-        '@type': 'SoftwareApplication',
-        name: tool.seoTitle ?? tool.name,
-        url: `https://godoclab.com/tool/${slug}`,
+        '@type': ['SoftwareApplication', 'WebApplication'],
+        name: tool.name,
+        url: toolUrl,
         description: tool.seoDescription ?? tool.description,
-        applicationCategory: 'DeveloperTools',
-        operatingSystem: 'All',
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Any',
         offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-        provider: { '@type': 'Organization', name: 'GoDocLab', url: 'https://godoclab.com' },
+        publisher: { '@id': `${site}/#organization` },
       }
+    : null;
+  const crumbs = tool
+    ? breadcrumbLd([
+        { name: 'Home', url: `${site}/` },
+        { name: 'Tools', url: `${site}/tools` },
+        { name: tool.name, url: toolUrl },
+      ])
     : null;
 
   return (
     <>
-      {schema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
-      )}
+      {schema && <JsonLd data={schema} />}
+      {crumbs && <JsonLd data={crumbs} />}
       <ToolClient slug={slug} />
     </>
   );

@@ -94,7 +94,9 @@ export function SidebarNav() {
       {/* ── SLIDE-IN DRAWER ── */}
       <div
         role="dialog"
-        aria-modal="true"
+        aria-modal={open}
+        aria-hidden={!open}
+        inert={!open}
         aria-label="Navigation menu"
         className="fixed top-0 left-0 h-full z-50 flex flex-col"
         style={{
@@ -176,14 +178,7 @@ export function SidebarNav() {
                       </span>
                     </button>
 
-                    {/* Tool sub-items */}
-                    <div
-                      style={{
-                        maxHeight: isExpanded ? `${tools.length * 36}px` : '0px',
-                        overflow: 'hidden',
-                        transition: 'max-height 0.25s ease',
-                      }}
-                    >
+                    {isExpanded && (
                       <div
                         className="ml-5 mt-0.5 mb-1.5"
                         style={{ borderLeft: `2px solid ${cat.color}30` }}
@@ -200,7 +195,7 @@ export function SidebarNav() {
                           </Link>
                         ))}
                       </div>
-                    </div>
+                    )}
 
                   </div>
                 );

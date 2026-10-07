@@ -24,8 +24,10 @@ Disallow: /
 
 User-agent: *
 Disallow: /wp-admin/
-Disallow: /login/
-Disallow: /signup/
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /admin
 Allow: /
 
 Sitemap: https://godoclab.com/sitemap.xml

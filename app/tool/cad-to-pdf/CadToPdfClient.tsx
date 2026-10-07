@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { apiPostBlob } from '../../lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
@@ -214,14 +215,7 @@ export default function CadToPdfClient() {
     try {
       const form = new FormData();
       form.append('file', file);
-      const res = await fetch(`${API_BASE}/pdf/cad-to-pdf`, {
-        method: 'POST', headers: authHdrs(), body: form,
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({ message: res.statusText }));
-        throw new Error(body.message || `HTTP ${res.status}`);
-      }
-      const blob = await res.blob();
+      const blob = await apiPostBlob('/pdf/cad-to-pdf', form);
       setDownloadUrl(URL.createObjectURL(blob));
       setDownloadName(file.name.replace(/\.[^.]+$/, '') + '.pdf');
     } catch (e) { setError((e as Error).message); }

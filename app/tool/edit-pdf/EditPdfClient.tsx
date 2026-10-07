@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { apiPostBlob } from '../../lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
@@ -493,9 +494,7 @@ export default function EditPdfClient() {
       const fd = new FormData();
       fd.append('file', file);
       fd.append('elements', JSON.stringify(elements));
-      const res = await fetch(`${API_BASE}/pdf/edit-pdf`, { method: 'POST', headers: authHdrs(), body: fd });
-      if (!res.ok) throw new Error(await res.text());
-      const blob = await res.blob();
+      const blob = await apiPostBlob('/pdf/edit-pdf', fd);
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
       a.href = url; a.download = file.name;

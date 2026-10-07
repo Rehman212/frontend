@@ -10,6 +10,8 @@ import { HowOurToolsWork } from './components/HowOurToolsWork';
 import { SecurityTrustCta } from './components/SecurityTrustCta';
 import { ToolsCatalog } from './components/ToolsCatalog';
 import { getSiteUrl } from './lib/site';
+import { JsonLd } from './components/JsonLd';
+import { webApplicationLd } from './lib/json-ld';
 
 export const metadata: Metadata = {
   title: 'GoDocLab — Every PDF Tool You Need',
@@ -28,29 +30,28 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <SiteShell>
+      <JsonLd data={webApplicationLd()} />
+      <main>
+        <HeroSection />
 
-      <HeroSection />
+        <PopularToolsSection />
 
-      <PopularToolsSection />
-
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        <main className="flex-1 min-w-0">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
           <ToolsCatalog mode="home" />
-        </main>
-      </div>
+        </div>
 
-      <HowOurToolsWork />
+        <HowOurToolsWork />
 
-      <SecurityTrustCta />
+        <SecurityTrustCta />
 
-      <WhyChooseUs />
+        <WhyChooseUs />
 
-      <ReviewsSection />
+        <ReviewsSection />
 
-      <BlogSection />
+        <BlogSection />
 
-      <FaqSection />
-
+        <FaqSection />
+      </main>
     </SiteShell>
   );
 }

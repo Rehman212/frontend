@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import { apiPostBlob } from '../../lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
@@ -117,13 +118,7 @@ export default function FillFormClient() {
       form.append('data', JSON.stringify(data));
       form.append('flatten', String(flatten));
 
-      const res = await fetch(`${API_BASE}/pdf/fill-form`, {
-        method: 'POST',
-        headers: authHdrs(),
-        body: form,
-      });
-      if (!res.ok) throw new Error(await res.text() || `HTTP ${res.status}`);
-      const blob = await res.blob();
+      const blob = await apiPostBlob('/pdf/fill-form', form);
       setDownloadUrl(URL.createObjectURL(blob));
       setDownloadName((file.name.replace(/\.pdf$/i, '') || 'document') + '_filled.pdf');
     } catch (e) {

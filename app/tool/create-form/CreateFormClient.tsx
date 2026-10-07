@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { apiPostBlob } from '../../lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://api.godoclab.com/api';
 
@@ -220,13 +221,7 @@ export default function CreateFormClient() {
       const form = new FormData();
       form.append('file', file);
       form.append('fields', JSON.stringify(defs));
-      const res = await fetch(`${API_BASE}/pdf/create-form`, {
-        method: 'POST',
-        headers: authHdrs(),
-        body: form,
-      });
-      if (!res.ok) { const t = await res.text(); throw new Error(t || `HTTP ${res.status}`); }
-      const blob = await res.blob();
+      const blob = await apiPostBlob('/pdf/create-form', form);
       const url  = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setDownloadName((file.name.replace(/\.pdf$/i, '') || 'document') + '_form.pdf');

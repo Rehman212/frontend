@@ -2,6 +2,7 @@ import { Navbar } from './Navbar';
 import { SidebarNav } from './SidebarNav';
 import { TopAnnouncementBar } from './TopAnnouncementBar';
 import { SiteFooter } from './SiteFooter';
+import { CookieConsent } from './CookieConsent';
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
@@ -13,6 +14,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <SidebarNav />
       <div className="flex-1 min-h-0">{children}</div>
       <SiteFooter />
+      <CookieConsent />
     </div>
   );
 }
