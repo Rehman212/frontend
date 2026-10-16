@@ -45,9 +45,17 @@ function authHeaders(token: string) {
 }
 
 async function parseError(res: Response, fallback: string) {
+  if (res.status === 413) {
+    return 'Post is too large to save. Remove pasted images or extra formatting and try again.';
+  }
   try {
     const data = await res.json();
-    if (typeof data?.message === 'string') return data.message;
+    if (typeof data?.message === 'string') {
+      if (/entity too large/i.test(data.message)) {
+        return 'Post is too large to save. Remove pasted images or extra formatting and try again.';
+      }
+      return data.message;
+    }
     if (Array.isArray(data?.message)) return data.message.join(', ');
   } catch { /* ignore */ }
   return fallback;

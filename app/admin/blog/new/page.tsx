@@ -124,7 +124,7 @@ function BlogPostForm() {
     setSaving(true);
     setError('');
 
-    const finalStatus = publish ? 'published' : status;
+    const finalStatus = publish ? 'published' : 'draft';
     const payload = {
       title,
       slug: slug || slugify(title),
@@ -146,6 +146,7 @@ function BlogPostForm() {
       } else {
         await createPost(token, payload);
       }
+      setStatus(finalStatus);
       setSaved(true);
       setTimeout(() => router.push('/admin/blog'), 800);
     } catch (e) {

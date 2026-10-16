@@ -24,6 +24,9 @@ function authHeaders(token: string) {
 }
 
 async function parseError(res: Response, fallback: string) {
+  if (res.status === 413) {
+    return 'Page is too large to save. Remove pasted images or extra formatting and try again.';
+  }
   try {
     const data = await res.json();
     if (typeof data?.message === 'string') return data.message;
