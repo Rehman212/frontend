@@ -177,19 +177,15 @@ export default async function BlogPostPage({
           </span>
         </nav>
 
-        {/* Hero split: cover | title panel */}
-        <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div
-            className={`relative min-h-[220px] sm:min-h-[280px] lg:min-h-[340px] ${
-              post.featuredImage ? '' : 'bg-slate-900'
-            }`}
-          >
+        {/* Hero split: full featured image | title panel */}
+        <div className="grid lg:grid-cols-[1.15fr_0.85fr] items-center gap-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className={post.featuredImage ? 'bg-slate-50' : 'relative min-h-[220px] sm:min-h-[280px] bg-slate-900'}>
             {post.featuredImage ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={post.featuredImage}
                 alt={post.title}
-                className="absolute inset-0 w-full h-full object-cover"
+                className="block w-full h-auto object-contain"
               />
             ) : (
               <div

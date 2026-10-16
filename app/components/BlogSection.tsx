@@ -128,30 +128,15 @@ function BlogCard({ post }: { post: BlogDisplayItem }) {
   return (
     <article className="group relative flex flex-col h-full rounded-2xl bg-white border border-slate-200/80 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(37,150,190,0.15)] hover:border-[#2596be]/30">
       <Link href={post.href} className="flex flex-col h-full">
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative overflow-hidden bg-slate-50">
           <Image
             src={post.image}
             alt={post.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            width={1200}
+            height={675}
+            className="block w-full h-auto object-contain"
             sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
             unoptimized
-          />
-          <div
-            className="absolute inset-0 mix-blend-multiply opacity-70"
-            style={{ background: post.gradient }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{ background: 'linear-gradient(to top, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.25) 50%, transparent 100%)' }}
-          />
-          <div
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)',
-              backgroundSize: '24px 24px',
-            }}
           />
 
           <div className="absolute top-4 left-4 z-10">

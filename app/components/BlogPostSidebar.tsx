@@ -121,13 +121,13 @@ export function BlogPostSidebar({
             {related.map((p) => (
               <li key={p.id}>
                 <Link href={blogPostPath(p.slug)} className="group flex gap-2.5">
-                  <div className="w-14 h-12 rounded-md overflow-hidden bg-slate-100 shrink-0">
+                  <div className="w-14 h-12 rounded-md overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
                     {p.featuredImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={p.featuredImage}
                         alt=""
-                        className="w-full h-full object-cover"
+                        className="max-w-full max-h-full object-contain"
                       />
                     ) : (
                       <div

@@ -61,15 +61,15 @@ function BlogCard({ post }: { post: BlogPost }) {
     <article className="group flex flex-col h-full bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
       <Link href={href} className="flex flex-col h-full">
         <div
-          className="relative h-36 flex items-center justify-center overflow-hidden"
-          style={{ background: 'linear-gradient(135deg, #112240 0%, #1e3a5f 50%, #2596be 100%)' }}
+          className="relative flex items-center justify-center overflow-hidden bg-slate-50"
+          style={post.featuredImage ? undefined : { background: 'linear-gradient(135deg, #112240 0%, #1e3a5f 50%, #2596be 100%)', minHeight: '9rem' }}
         >
           {post.featuredImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={post.featuredImage}
               alt={post.title}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="block w-full h-auto object-contain"
             />
           ) : (
             <>

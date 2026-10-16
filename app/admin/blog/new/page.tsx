@@ -302,7 +302,7 @@ function BlogPostForm() {
             {featuredImage ? (
               <div className="mb-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={featuredImage} alt="Featured" className="w-full h-36 object-cover" />
+                <img src={featuredImage} alt="Featured" className="w-full h-auto max-h-48 object-contain bg-slate-50" />
               </div>
             ) : (
               <div className="mb-3 h-36 rounded-lg border border-dashed border-gray-300 bg-gray-50 flex items-center justify-center text-xs text-gray-400">
