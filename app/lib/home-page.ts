@@ -4,6 +4,7 @@ export type HomeFaq = { question: string; answer: string };
 export type HomePageContent = {
   seoTitle: string;
   seoDescription: string;
+  focusKeyword: string;
   heroBadge: string;
   heroTitle: string;
   heroHighlight: string;
@@ -53,6 +54,7 @@ export function defaultHomePage(): HomePageContent {
     seoTitle: 'GoDocLab — Every PDF Tool You Need',
     seoDescription:
       'Merge, split, compress, convert, rotate, watermark, protect PDFs and more. Files are processed securely on GoDocLab servers and removed after use. 100% free, no sign-up.',
+    focusKeyword: '',
     heroBadge: 'Free · No sign-up · Instant download',
     heroTitle: 'Transform Any',
     heroHighlight: 'PDF or Image',
@@ -213,6 +215,7 @@ export function mergeHomePage(saved?: Partial<HomePageContent> | null): HomePage
     ...base,
     seoTitle: pick(saved.seoTitle, base.seoTitle),
     seoDescription: pick(saved.seoDescription, base.seoDescription),
+    focusKeyword: (saved.focusKeyword ?? '').trim(),
     heroBadge: pick(saved.heroBadge, base.heroBadge),
     heroTitle: pick(saved.heroTitle, base.heroTitle),
     heroHighlight: pick(saved.heroHighlight, base.heroHighlight),
@@ -265,4 +268,25 @@ export function fillHomeVars(
   return (text || '')
     .replace(/\{tools\}/g, String(vars.tools ?? ''))
     .replace(/\{categories\}/g, String(vars.categories ?? ''));
+}
+
+export function focusKeywordChecks(content: HomePageContent) {
+  const keyword = content.focusKeyword.trim().toLowerCase();
+  if (!keyword) {
+    return { keyword: '', inTitle: false, inDescription: false, inHero: false };
+  }
+  const hero = [
+    content.heroTitle,
+    content.heroHighlight,
+    content.heroAfter,
+    content.heroSubtitle,
+  ]
+    .join(' ')
+    .toLowerCase();
+  return {
+    keyword: content.focusKeyword.trim(),
+    inTitle: content.seoTitle.toLowerCase().includes(keyword),
+    inDescription: content.seoDescription.toLowerCase().includes(keyword),
+    inHero: hero.includes(keyword),
+  };
 }

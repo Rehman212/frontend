@@ -19,9 +19,11 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
   const home = await fetchHomePageContent();
   const site = getSiteUrl();
+  const keyword = home.focusKeyword.trim();
   return {
     title: home.seoTitle,
     description: home.seoDescription,
+    keywords: keyword || undefined,
     alternates: { canonical: `${site}/` },
     openGraph: {
       title: home.seoTitle,

@@ -14,6 +14,7 @@ import {
 } from '../components/AdminUi';
 import {
   defaultHomePage,
+  focusKeywordChecks,
   type HomeFaq,
   type HomePageContent,
   type HomeTextItem,
@@ -192,6 +193,37 @@ export default function HomeEditorPage() {
       <Card>
         {tab === 'seo' && (
           <div className="space-y-3 max-w-2xl">
+            <div>
+              <FieldLabel>Focus keyword</FieldLabel>
+              <TextInput
+                value={data.focusKeyword}
+                onChange={(focusKeyword) => update({ focusKeyword })}
+                placeholder="e.g. free pdf tools"
+              />
+              <p className="mt-1 text-[11px] text-gray-400">
+                Primary phrase this homepage should rank for. Used in the meta keywords tag.
+              </p>
+              {data.focusKeyword.trim() ? (
+                <ul className="mt-3 space-y-1.5 text-xs">
+                  {(() => {
+                    const checks = focusKeywordChecks(data);
+                    const rows = [
+                      { ok: checks.inTitle, label: 'In SEO title' },
+                      { ok: checks.inDescription, label: 'In SEO description' },
+                      { ok: checks.inHero, label: 'In hero heading or subtitle' },
+                    ];
+                    return rows.map((row) => (
+                      <li
+                        key={row.label}
+                        className={row.ok ? 'text-emerald-700' : 'text-red-600'}
+                      >
+                        {row.ok ? '✓' : '✗'} {row.label}
+                      </li>
+                    ));
+                  })()}
+                </ul>
+              ) : null}
+            </div>
             <div>
               <FieldLabel>SEO title</FieldLabel>
               <TextInput value={data.seoTitle} onChange={(seoTitle) => update({ seoTitle })} />
