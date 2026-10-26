@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { Providers } from "./components/Providers";
 import { JsonLd } from "./components/JsonLd";
@@ -38,6 +39,16 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <Script id="smartlook" strategy="afterInteractive">
+          {`
+            window.smartlook||(function(d) {
+              var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
+              var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
+              c.charset='utf-8';c.src='https://web-sdk.smartlook.com/recorder.js';h.appendChild(c);
+            })(document);
+            smartlook('init', '2b445c1b5df289a5d2782f96ae3cb81d73e5cb70', { region: 'eu' });
+          `}
+        </Script>
         <JsonLd data={siteGraph()} />
         <Providers>{children}</Providers>
       </body>
