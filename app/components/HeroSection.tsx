@@ -3,16 +3,13 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { TOOLS, CATEGORIES } from '../lib/tools';
+import { fillHomeVars, type HomePageContent } from '../lib/home-page';
 
 const FEATURED_SLUGS = ['merge-pdf', 'compress-pdf', 'pdf-to-image', 'remove-background', 'ocr-pdf', 'watermark-pdf'];
 
-const TRUST_ITEMS = [
-  { icon: '🔒', label: 'Secure processing' },
-  { icon: '⚡', label: 'Instant results' },
-  { icon: '🆓', label: 'No sign-up' },
-];
+const TRUST_ICONS = ['🔒', '⚡', '🆓'];
 
-export function HeroSection() {
+export function HeroSection({ home }: { home: HomePageContent }) {
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -49,19 +46,18 @@ export function HeroSection() {
           <div className="text-center lg:text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.18em] mb-6 hero-badge">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              Free · No sign-up · Instant download
+              {home.heroBadge}
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-[3.35rem] font-black text-white leading-[1.08] tracking-tight mb-5">
-              Transform Any{' '}
-              <span className="hero-gradient-text">PDF or Image</span>
+              {home.heroTitle}{' '}
+              <span className="hero-gradient-text">{home.heroHighlight}</span>
               <br className="hidden sm:block" />
-              {' '}in Seconds
+              {' '}{home.heroAfter}
             </h1>
 
             <p className="text-base sm:text-lg max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed" style={{ color: '#94a3b8' }}>
-              Merge, compress, convert, OCR, watermark, remove backgrounds and more —
-              {totalTools}+ professional tools, 100% free forever.
+              {fillHomeVars(home.heroSubtitle, { tools: totalTools })}
             </p>
 
             {/* Search */}
@@ -118,7 +114,7 @@ export function HeroSection() {
                 href="#pdf-section"
                 className="hero-cta-primary inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-white w-full sm:w-auto"
               >
-                Browse All Tools
+                {home.heroCtaPrimary}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
@@ -127,19 +123,19 @@ export function HeroSection() {
                 href="/tool/merge-pdf"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold w-full sm:w-auto hero-cta-secondary"
               >
-                <span>🔀</span> Merge PDF — Most Popular
+                <span>🔀</span> {home.heroCtaSecondary}
               </Link>
             </div>
 
             {/* Trust pills */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
-              {TRUST_ITEMS.map((item) => (
+              {home.heroTrust.map((label, i) => (
                 <span
-                  key={item.label}
+                  key={label}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-300 bg-white/[0.06] border border-white/[0.08]"
                 >
-                  <span>{item.icon}</span>
-                  {item.label}
+                  <span>{TRUST_ICONS[i] ?? '✓'}</span>
+                  {label}
                 </span>
               ))}
             </div>

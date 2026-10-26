@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { HomePageContent } from '../lib/home-page';
 
 const STEPS = [
   {
@@ -48,21 +49,21 @@ const STEPS = [
   },
 ];
 
-export function HowOurToolsWork() {
+export function HowOurToolsWork({ home }: { home: HomePageContent }) {
   return (
     <section className="relative py-14 sm:py-20 bg-white border-y border-slate-200/80">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-14">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-[#2596be] bg-[#2596be]/10 border border-[#2596be]/20 mb-4">
-            How It Works
+            {home.howEyebrow}
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-            How Our Tools{' '}
-            <span className="text-[#2596be]">Work</span>
+            {home.howTitle}{' '}
+            <span className="text-[#2596be]">{home.howHighlight}</span>
           </h2>
           <p className="text-base text-slate-500 leading-relaxed">
-            Four simple steps — from upload to download. No account, no installation, no hassle.
+            {home.howSubtitle}
           </p>
         </div>
 
@@ -92,8 +93,12 @@ export function HowOurToolsWork() {
               <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#2596be] mb-1.5">
                 Step {item.step}
               </p>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{item.description}</p>
+              <h3 className="text-lg font-bold text-slate-900 mb-2">
+                {home.howSteps[index]?.title || item.title}
+              </h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                {home.howSteps[index]?.text || item.description}
+              </p>
             </div>
           ))}
         </div>

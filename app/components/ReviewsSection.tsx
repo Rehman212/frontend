@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { HomePageContent } from '../lib/home-page';
 
 const REVIEWS = [
   {
@@ -133,7 +134,7 @@ function MarqueeRow({ reviews, reverse }: { reviews: typeof REVIEWS; reverse?: b
   );
 }
 
-export function ReviewsSection() {
+export function ReviewsSection({ home }: { home: HomePageContent }) {
   const row1 = REVIEWS.slice(0, 4);
   const row2 = REVIEWS.slice(4, 8);
 
@@ -142,14 +143,14 @@ export function ReviewsSection() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 mb-10">
         <div className="text-center max-w-2xl mx-auto">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-[#2596be] bg-[#2596be]/10 border border-[#2596be]/20 mb-4">
-            Reviews
+            {home.reviewsEyebrow}
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-            Loved by{' '}
-            <span className="text-[#2596be]">Thousands</span>
+            {home.reviewsTitle}{' '}
+            <span className="text-[#2596be]">{home.reviewsHighlight}</span>
           </h2>
           <p className="text-base text-slate-500 leading-relaxed">
-            See what professionals, students and teams say about our free PDF and image tools.
+            {home.reviewsSubtitle}
           </p>
 
           {/* Overall rating */}

@@ -1,4 +1,5 @@
 import { TOOLS, CATEGORIES } from '../lib/tools';
+import { fillHomeVars, type HomePageContent } from '../lib/home-page';
 
 const REASONS = [
   {
@@ -68,7 +69,7 @@ const REASONS = [
   },
 ];
 
-export function WhyChooseUs() {
+export function WhyChooseUs({ home }: { home: HomePageContent }) {
   const totalTools = TOOLS.length;
   const totalCategories = CATEGORIES.length;
 
@@ -83,20 +84,20 @@ export function WhyChooseUs() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-[#2596be] bg-[#2596be]/10 border border-[#2596be]/20 mb-4">
-            Why Choose Us
+            {home.whyEyebrow}
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-            The Smarter Way to Handle{' '}
-            <span className="text-[#2596be]">PDFs &amp; Images</span>
+            {home.whyTitle}{' '}
+            <span className="text-[#2596be]">{home.whyHighlight}</span>
           </h2>
           <p className="text-base text-slate-500 leading-relaxed">
-            {totalTools}+ tools across {totalCategories} categories — built for speed, privacy and zero hassle.
+            {fillHomeVars(home.whySubtitle, { tools: totalTools, categories: totalCategories })}
           </p>
         </div>
 
         {/* Feature grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {REASONS.map((item) => (
+          {REASONS.map((item, i) => (
             <div
               key={item.title}
               className="group relative bg-white rounded-2xl border border-slate-200/80 p-6 hover:border-[#2596be]/30 hover:shadow-[0_12px_40px_rgba(37,150,190,0.1)] transition-all duration-300"
@@ -111,9 +112,11 @@ export function WhyChooseUs() {
                 {item.icon}
               </div>
               <h3 className="text-base font-bold text-slate-900 mb-2 group-hover:text-[#2596be] transition-colors">
-                {item.title}
+                {home.whyItems[i]?.title || item.title}
               </h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{item.description}</p>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                {home.whyItems[i]?.text || item.description}
+              </p>
             </div>
           ))}
         </div>

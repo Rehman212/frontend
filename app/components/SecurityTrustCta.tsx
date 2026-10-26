@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { HomePageContent } from '../lib/home-page';
 
 const TRUST_POINTS = [
   {
@@ -45,7 +46,7 @@ const TRUST_POINTS = [
   },
 ];
 
-export function SecurityTrustCta() {
+export function SecurityTrustCta({ home }: { home: HomePageContent }) {
   return (
     <section className="relative py-14 sm:py-20 overflow-hidden">
       <div
@@ -68,17 +69,16 @@ export function SecurityTrustCta() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              Your files are safe
+              {home.trustEyebrow}
             </span>
 
             <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight mb-4">
-              Process PDFs &amp; Images{' '}
-              <span className="text-[#7dd3fc]">With Confidence</span>
+              {home.trustTitle}{' '}
+              <span className="text-[#7dd3fc]">{home.trustHighlight}</span>
             </h2>
 
             <p className="text-base text-slate-300 leading-relaxed max-w-xl mb-8">
-              Files travel over HTTPS, are processed on GoDocLab servers, then removed
-              automatically. You can focus on the result — not leftover copies of your documents.
+              {home.trustSubtitle}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -86,7 +86,7 @@ export function SecurityTrustCta() {
                 href="/tool/merge-pdf"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-[#0f172a] bg-white hover:bg-slate-100 transition-all hover:-translate-y-0.5 shadow-lg shadow-black/20"
               >
-                Try Securely — Free
+                {home.trustCtaPrimary}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
@@ -95,14 +95,14 @@ export function SecurityTrustCta() {
                 href="/tools"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold text-white border border-white/25 bg-white/5 hover:bg-white/10 transition-all"
               >
-                Browse All Tools
+                {home.trustCtaSecondary}
               </Link>
             </div>
           </div>
 
           {/* Right — trust grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {TRUST_POINTS.map((point) => (
+            {TRUST_POINTS.map((point, i) => (
               <div
                 key={point.title}
                 className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-sm p-5 hover:bg-white/[0.09] hover:border-[#7dd3fc]/30 transition-all duration-300"
@@ -110,8 +110,12 @@ export function SecurityTrustCta() {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center text-[#7dd3fc] bg-[#2596be]/20 border border-[#2596be]/30 mb-3">
                   {point.icon}
                 </div>
-                <h3 className="text-sm font-bold text-white mb-1">{point.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{point.text}</p>
+                <h3 className="text-sm font-bold text-white mb-1">
+                  {home.trustPoints[i]?.title || point.title}
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  {home.trustPoints[i]?.text || point.text}
+                </p>
               </div>
             ))}
           </div>

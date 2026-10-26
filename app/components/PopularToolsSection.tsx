@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { TOOLS, CATEGORIES, type Tool } from '../lib/tools';
+import type { HomePageContent } from '../lib/home-page';
 
 const POPULAR_SLUGS = [
   'merge-pdf',
@@ -100,7 +101,7 @@ function MarqueeRow({ tools, reverse }: { tools: Tool[]; reverse?: boolean }) {
   );
 }
 
-export function PopularToolsSection() {
+export function PopularToolsSection({ home }: { home: HomePageContent }) {
   const tools = getPopularTools();
   const row1 = tools.slice(0, 5);
   const row2 = tools.slice(5);
@@ -110,14 +111,14 @@ export function PopularToolsSection() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 mb-10">
         <div className="text-center max-w-2xl mx-auto">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-[#2596be] bg-[#2596be]/10 border border-[#2596be]/20 mb-4">
-            Popular Tools
+            {home.popularEyebrow}
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-            Most Used{' '}
-            <span className="text-[#2596be]">Tools</span>
+            {home.popularTitle}{' '}
+            <span className="text-[#2596be]">{home.popularHighlight}</span>
           </h2>
           <p className="text-base text-slate-500 leading-relaxed">
-            Jump straight to our top PDF and image tools — hover to pause, click to open instantly.
+            {home.popularSubtitle}
           </p>
 
           <div className="inline-flex items-center gap-3 mt-6 px-5 py-2.5 rounded-full bg-[#f4f6f8] border border-slate-200">

@@ -12,45 +12,53 @@ import { ToolsCatalog } from './components/ToolsCatalog';
 import { getSiteUrl } from './lib/site';
 import { JsonLd } from './components/JsonLd';
 import { webApplicationLd } from './lib/json-ld';
+import { fetchHomePageContent } from './admin/lib/home-page-api';
 
-export const metadata: Metadata = {
-  title: 'GoDocLab — Every PDF Tool You Need',
-  description:
-    'Merge, split, compress, convert, rotate, watermark, protect PDFs and more. Files are processed securely on GoDocLab servers and removed after use. 100% free, no sign-up.',
-  alternates: { canonical: `${getSiteUrl()}/` },
-  openGraph: {
-    title: 'GoDocLab — Every PDF Tool You Need',
-    description: 'Free PDF and image tools. Processed on our servers, then deleted. No sign-up.',
-    url: `${getSiteUrl()}/`,
-    siteName: 'GoDocLab',
-    type: 'website',
-  },
-};
+export const dynamic = 'force-dynamic';
 
-export default function Home() {
+export async function generateMetadata(): Promise<Metadata> {
+  const home = await fetchHomePageContent();
+  const site = getSiteUrl();
+  return {
+    title: home.seoTitle,
+    description: home.seoDescription,
+    alternates: { canonical: `${site}/` },
+    openGraph: {
+      title: home.seoTitle,
+      description: home.seoDescription,
+      url: `${site}/`,
+      siteName: 'GoDocLab',
+      type: 'website',
+    },
+  };
+}
+
+export default async function Home() {
+  const home = await fetchHomePageContent();
+
   return (
     <SiteShell>
       <JsonLd data={webApplicationLd()} />
       <main>
-        <HeroSection />
+        <HeroSection home={home} />
 
-        <PopularToolsSection />
+        <PopularToolsSection home={home} />
 
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-8 sm:py-10">
-          <ToolsCatalog mode="home" />
+          <ToolsCatalog mode="home" home={home} />
         </div>
 
-        <HowOurToolsWork />
+        <HowOurToolsWork home={home} />
 
-        <SecurityTrustCta />
+        <SecurityTrustCta home={home} />
 
-        <WhyChooseUs />
+        <WhyChooseUs home={home} />
 
-        <ReviewsSection />
+        <ReviewsSection home={home} />
 
         <BlogSection />
 
-        <FaqSection />
+        <FaqSection home={home} />
       </main>
     </SiteShell>
   );

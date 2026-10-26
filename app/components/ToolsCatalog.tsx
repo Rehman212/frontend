@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { TOOLS, CATEGORIES, type Tool } from '../lib/tools';
+import type { HomePageContent } from '../lib/home-page';
 
 type Category = (typeof CATEGORIES)[number];
 
@@ -121,10 +122,12 @@ function resolveTabFromHash(hash: string, allowAll: boolean, fallback: string): 
 export function ToolsCatalog({
   mode = 'home',
   showSectionHeader = true,
+  home,
 }: {
   mode?: ToolsCatalogMode;
   /** Home section title; hide on dedicated /tools page (has its own hero). */
   showSectionHeader?: boolean;
+  home?: Pick<HomePageContent, 'catalogTitle' | 'catalogSubtitle'>;
 }) {
   const showAllTab = mode === 'full';
   const enableSearch = mode === 'full';
@@ -184,11 +187,11 @@ export function ToolsCatalog({
       {showSectionHeader && (
         <div className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight leading-tight">
-            Every tool you need to work with PDFs &amp; images
+            {home?.catalogTitle || 'Every tool you need to work with PDFs & images'}
           </h2>
           <p className="mt-3 sm:mt-4 text-sm sm:text-base text-slate-500 leading-relaxed">
-            All tools are 100% free and easy to use. Merge, split, compress, convert, edit and more —
-            right in your browser.
+            {home?.catalogSubtitle ||
+              'All tools are 100% free and easy to use. Merge, split, compress, convert, edit and more — right in your browser.'}
           </p>
           {mode === 'home' && (
             <Link

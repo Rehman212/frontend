@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import type { HomePageContent } from '../lib/home-page';
 
 const FAQS = [
   {
@@ -99,8 +100,9 @@ function FaqItem({
   );
 }
 
-export function FaqSection() {
+export function FaqSection({ home }: { home: HomePageContent }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const faqs = home.faqs.length ? home.faqs : FAQS;
 
   return (
     <section className="relative py-14 sm:py-20 bg-white border-t border-slate-200/80">
@@ -109,26 +111,26 @@ export function FaqSection() {
           {/* Left — sticky intro */}
           <div className="lg:sticky lg:top-24">
             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-[#2596be] bg-[#2596be]/10 border border-[#2596be]/20 mb-4">
-              FAQs
+              {home.faqEyebrow}
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-4">
-              Frequently Asked{' '}
-              <span className="text-[#2596be]">Questions</span>
+              {home.faqTitle}{' '}
+              <span className="text-[#2596be]">{home.faqHighlight}</span>
             </h2>
             <p className="text-base text-slate-500 leading-relaxed mb-6">
-              Got questions? Here are answers to the most common ones about our free PDF and image tools.
+              {home.faqSubtitle}
             </p>
             <div className="rounded-2xl border border-slate-200 bg-[#f4f6f8] p-5">
-              <p className="text-sm font-bold text-slate-800 mb-1">Still need help?</p>
+              <p className="text-sm font-bold text-slate-800 mb-1">{home.faqHelpTitle}</p>
               <p className="text-sm text-slate-500">
-                Visit any tool page and start processing — most issues are resolved by using the right file format.
+                {home.faqHelpText}
               </p>
             </div>
           </div>
 
           {/* Right — accordion */}
           <div className="space-y-3">
-            {FAQS.map((faq, index) => (
+            {faqs.map((faq, index) => (
               <FaqItem
                 key={faq.question}
                 question={faq.question}

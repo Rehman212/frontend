@@ -19,6 +19,7 @@ import {
   IconSitemap,
   IconTools,
   IconUsers,
+  IconHome,
 } from './components/AdminIcons';
 
 const SIDEBAR_WIDE = 260;
@@ -45,6 +46,11 @@ const NAV_SECTIONS: NavSection[] = [
     title: 'Content',
     items: [
       { href: '/admin/menu', label: 'Menu', icon: <IconMenu className="w-[18px] h-[18px]" /> },
+      {
+        href: '/admin/home',
+        label: 'Homepage',
+        icon: <IconHome className="w-[18px] h-[18px]" />,
+      },
       { href: '/admin/pages', label: 'Pages', icon: <IconPages className="w-[18px] h-[18px]" /> },
       {
         href: '/admin/tools',
@@ -93,6 +99,7 @@ function pageTitle(pathname: string) {
   const map: Record<string, string> = {
     '/admin': 'Dashboard',
     '/admin/menu': 'Menu',
+    '/admin/home': 'Homepage',
     '/admin/pages': 'Pages',
     '/admin/pages/new': 'Page Editor',
     '/admin/tools': 'All Tools',
