@@ -39,6 +39,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
+        <Script
+          id="adsense"
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4580981084619995"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
         <Script id="smartlook" strategy="afterInteractive">
           {`
             window.smartlook||(function(d) {
